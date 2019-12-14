@@ -3,8 +3,6 @@ import bluetooth
 class advertiser:
     uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
 
-    def __init__(self):
-
     def advertise(self):
         try:
             self.server_sock=bluetooth.BluetoothSocket( bluetooth.RFCOMM )
