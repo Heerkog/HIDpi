@@ -10,10 +10,13 @@ class Advertiser:
     def advertise(self):
         try:
             port = bluetooth.get_available_port(bluetooth.RFCOMM)
+            print("created port")
             self.server_sock.bind(("", port))
+            print("bound")
             self.server_sock.listen(1)
             print("listening on port %d" % port)
             bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [0x0508])
+            print("advertising")
         except:
             print("Failed to advertise Bluetooth HID service")
 
