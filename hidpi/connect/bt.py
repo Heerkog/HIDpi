@@ -22,6 +22,7 @@ class Advertiser:
         print("Waiting for connection on RFCOMM channel %d" %  self.server_sock.getsockname()[1])
 
     def accept(self):
+        print("Accepting")
         client_sock, address = self.server_sock.accept()
         print("Accepted connection from ", address)
         return client_sock
