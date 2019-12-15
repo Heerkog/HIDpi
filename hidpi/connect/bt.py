@@ -10,7 +10,7 @@ class Advertiser:
         os.system("hciconfig hci0 name HIDpi")
         # Make device discoverable
         os.system("hciconfig hci0 piscan")
-        self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        self.server_sock = bluetooth.BluetoothSocket(bluetooth.L2CAP)
 
     def advertise(self):
         try:
