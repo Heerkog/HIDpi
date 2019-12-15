@@ -6,5 +6,6 @@ if __name__ == '__main__':
     adv = bt.Advertiser()
     adv.advertise()
     client = adv.accept()
+    time.sleep(10)
     adv.disconnect(client)
     adv.close()
