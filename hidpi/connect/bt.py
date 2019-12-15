@@ -3,17 +3,16 @@ import bluetooth
 
 class Advertiser:
     uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
+    port = 3
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
     def advertise(self):
-        port = bluetooth.get_available_port(bluetooth.RFCOMM)
-        print("Failed to create port")
-        self.server_sock.bind(("B8:27:EB:77:31:44", port))
+        self.server_sock.bind(("B8:27:EB:77:31:44", self.port))
         print("bound")
         self.server_sock.listen(1)
-        print("listening on port %d" % port)
+        print("listening on port %d" % self.port)
         bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [0x0508])
         print("advertising")
 
