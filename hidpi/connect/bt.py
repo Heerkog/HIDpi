@@ -14,7 +14,7 @@ class Advertiser:
 
     def advertise(self):
         try:
-            self.server_sock.bind(("B8:27:EB:77:31:44", bluetooth.PORT_ANY))
+            self.server_sock.bind(("", bluetooth.PORT_ANY))
             self.server_sock.listen(1)
             bluetooth.advertise_service(self.server_sock, "Joystick", self.service_uuid, [self.service_class])
         except:
