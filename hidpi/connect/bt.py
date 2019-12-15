@@ -13,7 +13,7 @@ class Advertiser:
         print("bound")
         self.server_sock.listen(1)
         print("listening on port %d" % self.port)
-        bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [0x0508])
+        bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, ["0508"])
         print("advertising")
 
     def accept(self):
