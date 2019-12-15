@@ -2,7 +2,7 @@ import bluetooth
 
 
 class Advertiser:
-    uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
+    service_uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -12,7 +12,8 @@ class Advertiser:
         print("bound")
         self.server_sock.listen(1)
         print("listening on port %d" % self.server_sock.getsockname()[1])
-        bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [self.uuid, 0x0508])
+        print(bluetooth.HEADSET_CLASS)
+        bluetooth.advertise_service(self.server_sock, "FooBar Service", self.service_uuid, ["0508"])
         print("advertising")
 
     def accept(self):
