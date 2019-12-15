@@ -16,9 +16,10 @@ class Advertiser:
         try:
             self.server_sock.bind(("B8:27:EB:77:31:44", bluetooth.PORT_ANY))
             self.server_sock.listen(1)
-            bluetooth.advertise_service(self.server_sock, "Joystick", self.service_uuid)  # , [self.service_class])
+            bluetooth.advertise_service(self.server_sock, "Joystick", self.service_uuid, [self.service_class])
         except:
             print("Failed to advertise service.")
+        print("Waiting for connection on RFCOMM channel %d" %  self.server_sock.getsockname()[1])
 
     def accept(self):
         client_sock, address = self.server_sock.accept()
