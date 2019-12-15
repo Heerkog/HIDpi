@@ -8,17 +8,14 @@ class Advertiser:
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 
     def advertise(self):
-        try:
-            port = bluetooth.get_available_port(bluetooth.RFCOMM)
-            print("created port")
-            self.server_sock.bind(("B8:27:EB:77:31:44", port))
-            print("bound")
-            self.server_sock.listen(1)
-            print("listening on port %d" % port)
-            bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [0x0508])
-            print("advertising")
-        except:
-            print("Failed to advertise Bluetooth HID service")
+        port = bluetooth.get_available_port(bluetooth.RFCOMM)
+        print("Failed to create port")
+        self.server_sock.bind(("B8:27:EB:77:31:44", port))
+        print("bound")
+        self.server_sock.listen(1)
+        print("listening on port %d" % port)
+        bluetooth.advertise_service(self.server_sock, "FooBar Service", self.uuid, [0x0508])
+        print("advertising")
 
     def accept(self):
         client_sock, address = self.server_sock.accept()
