@@ -11,7 +11,7 @@ class Advertiser:
         try:
             port = bluetooth.get_available_port(bluetooth.RFCOMM)
             print("created port")
-            self.server_sock.bind(("", port))
+            self.server_sock.bind(("B8:27:EB:77:31:44", port))
             print("bound")
             self.server_sock.listen(1)
             print("listening on port %d" % port)
