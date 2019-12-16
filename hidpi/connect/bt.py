@@ -1,4 +1,4 @@
-from bluetooth import *
+import bluetooth
 import os
 
 class Advertiser:
