@@ -1,4 +1,4 @@
-import bluetooth
+from bluetooth import *
 import os
 
 class Advertiser:
@@ -7,7 +7,7 @@ class Advertiser:
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        os.system("hciconfig hci0 class 0x000501")
+        os.system("hciconfig hci0 class 0x000508")
         os.system("hciconfig hci0 name HIDpi")
         # Make device discoverable
         os.system("hciconfig hci0 piscan")
