@@ -3,7 +3,7 @@ import os
 
 class Advertiser:
     service_uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
-    service_class = "1124"  # Human Interface Device (HID)
+    #  service_class = "1124"  # Human Interface Device (HID)
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -16,15 +16,17 @@ class Advertiser:
         try:
             self.server_sock.bind(("", bluetooth.PORT_ANY))
             self.server_sock.listen(1)
-            bluetooth.advertise_service(self.server_sock, "Joystick", self.service_uuid, [self.service_class])
+            bluetooth.advertise_service(self.server_sock, "Joystick", self.service_uuid,
+                                        service_classes=[bluetooth.HID_CLASS],
+                                        profiles=[bluetooth.HID_PROFILE])
         except:
             print("Failed to advertise service.")
-        print("Waiting for connection on RFCOMM channel %d" %  self.server_sock.getsockname()[1])
+        print("Waiting for connection on RFCOMM channel {}".format(self.server_sock.getsockname()[1]))
 
     def accept(self):
         print("Accepting")
         client_sock, address = self.server_sock.accept()
-        print("Accepted connection from ", address)
+        print("Accepted connection from {}".format(address))
         return client_sock
 
     def disconnect(self, client_sock):
