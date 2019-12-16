@@ -1,5 +1,6 @@
 import bluetooth
 import os
+import socket
 
 class Advertiser:
     service_uuid = "ec20ee5f-491d-4f9c-adb6-26250bdcfbd1"
@@ -7,10 +8,11 @@ class Advertiser:
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-    #     os.system("hciconfig hci0 class 0x000508")
-    #     os.system("hciconfig hci0 name HIDpi")
-    #     # Make device discoverable
-    #     os.system("hciconfig hci0 piscan")
+        socket.set_security(self.server_sock, socket.AUTH)
+        os.system("hciconfig hci0 class 0x000501")
+        os.system("hciconfig hci0 name HIDpi")
+        # Make device discoverable
+        os.system("hciconfig hci0 piscan")
 
     def advertise(self):
         try:
