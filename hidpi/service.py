@@ -142,7 +142,7 @@ class BTHIDService(dbus.service.Object):
         dbus.service.Object.__init__(self, bus_name, "/nl/rug/ds/heerkog/bthidservice")
 
         #create and setup our device
-        self.device = BTHIDService();
+        self.device = BTJoystick();
 
         #start listening for connections
         self.device.listen();
