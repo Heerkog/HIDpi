@@ -1,11 +1,6 @@
-from hidpi.connect import bt
+from hidpi.hid import Joystick
 import time # Used for pausing the process
 
 
 if __name__ == '__main__':
-    adv = bt.Advertiser()
-    adv.advertise()
-    client = adv.accept()
-    time.sleep(10)
-    adv.disconnect(client)
-    adv.close()
+    joystick = Joystick();

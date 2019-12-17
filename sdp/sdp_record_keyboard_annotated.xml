@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<record>
+	<!-- Service Class ID List -->
+	<attribute id="0x0001">
+		<sequence>
+			<!-- HID Class -->
+			<uuid value="0x1124" />
+		</sequence>
+	</attribute>
+	<!-- Protocol Descriptor List -->
+	<attribute id="0x0004">
+		<sequence>
+			<sequence>
+				<!-- L2CAP  -->
+				<uuid value="0x0100" />
+				<!-- HID Control Port -->
+				<uint16 value="0x0011" />
+			</sequence>
+			<sequence>
+				<!-- HID Protocol -->
+				<uuid value="0x0011" />
+			</sequence>
+		</sequence>
+	</attribute>
+	<!-- Language Base Attribute ID List -->
+	<attribute id="0x0006">
+		<sequence>
+			<!-- English -->
+			<uint16 value="0x656e" />
+			<!-- UTF-8 Encoding -->
+			<uint16 value="0x006a" />
+			<!-- Primary Language Base ID -->
+			<uint16 value="0x0100" />
+		</sequence>
+	</attribute>
+	<!-- Additional Protocol Descriptor Lists -->
+	<attribute id="0x000d">
+		<sequence>
+			<sequence>
+				<sequence>
+					<!-- L2CAP  -->
+					<uuid value="0x0100" />
+					<!-- HID Interrupt Port -->
+					<uint16 value="0x0013" />
+				</sequence>
+				<sequence>
+					<!-- HID Protocol -->
+					<uuid value="0x0011" />
+				</sequence>
+			</sequence>
+		</sequence>
+	</attribute>
+	<!-- Bluetooth Profile Descriptor List -->
+	<attribute id="0x0009">
+		<sequence>
+			<sequence>
+				<!-- HID Profile -->
+				<uuid value="0x1124" />
+				<!-- Version 1.00 -->
+				<uint16 value="0x0100" />
+			</sequence>
+		</sequence>
+	</attribute>
+	<!-- Service Name -->
+	<attribute id="0x0100">
+		<text value="Raspberry Pi HID Keyboard" />
+	</attribute>
+	<!-- Service Description -->
+	<attribute id="0x0101">
+		<text value="Raspberry Pi HID Keyboard with GPIO Input" />
+	</attribute>
+	<!-- Provider Name -->
+	<attribute id="0x0102">
+		<text value="Homegrown Electronics" />
+	</attribute>
+	<!-- HID Parser Version -->
+	<attribute id="0x0201">
+		<!-- Version 1.1.1 -->
+		<uint16 value="0x0111" />
+	</attribute>
+	<!-- HID Device Subclass -->
+	<attribute id="0x0202">
+		<!-- Keyboard Subclass 01000000 = 0x40 -->
+		<uint8 value="0x40" />
+		<!-- Gamepad Subclass 00001000 = 0x08 -->
+		<!-- Pointer Subclass 10000000 = 0x80 -->
+		<!-- Joystick Subclass 00000100 = 0x04 -->
+	</attribute>
+	<!-- HID Country Code -->
+	<attribute id="0x0203">
+		<!-- International (ISO)  -->
+		<uint8 value="0x0D" />
+	</attribute>
+	<!-- HID Virtual Cable -->
+	<attribute id="0x0204">
+		<boolean value="false" />
+	</attribute>
+	<!-- HID Reconnect Initiate -->
+	<attribute id="0x0205">
+		<boolean value="false" />
+	</attribute>
+	<!-- HID Descriptor List -->
+	<attribute id="0x0206">
+		<sequence>
+			<sequence>
+				<!-- Report Type-->
+				<uint8 value="0x22" />
+				<text encoding="hex" value="05010906a101850175019508050719e029e715002501810295017508810395057501050819012905910295017503910395067508150026ff000507190029ff8100c0050c0901a1018503150025017501950b0a23020a21020ab10109b809b609cd09b509e209ea09e9093081029501750d8103c0" />
+			</sequence>
+		</sequence>
+	</attribute>
+	<!-- HID LANGID Base List -->
+	<attribute id="0x0207">
+		<sequence>
+			<sequence>
+				<!-- English (United States) -->
+				<uint16 value="0x0409" />
+				<!-- Bluetooth String Offset -->
+				<uint16 value="0x0100" />
+			</sequence>
+		</sequence>
+	</attribute>
+	<!-- HID Normally Connectable -->
+	<attribute id="0x020d">
+		<boolean value="true" />
+	</attribute>
+	<!-- HID Boot Device -->
+	<attribute id="0x020e">
+		<boolean value="false" />
+	</attribute>
+</record>
