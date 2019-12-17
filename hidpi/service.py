@@ -94,7 +94,7 @@ class BTJoystick:
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
-        print("Reading service record")
+        print("Reading service record: " + self.SDP_RECORD_PATH)
 
         try:
             fh = open(self.SDP_RECORD_PATH, "r")
