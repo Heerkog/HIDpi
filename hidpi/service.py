@@ -91,7 +91,7 @@ class BTJoystick:
 
         print("Profile registered ")
 
-        dbus.mainloop.run()
+        mainloop.run()
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
@@ -160,6 +160,5 @@ if __name__ == "__main__":
         sys.exit("Only root can run this script")
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    myservice = BTHIDService()
     mainloop = GObject.MainLoop()
-    mainloop.run()
+    myservice = BTHIDService()
