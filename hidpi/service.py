@@ -3,8 +3,8 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from gi.repository import GObject
-
+import GLib.MainLoop
+from bluetooth import BluetoothSocket, L2CAP
 
 #define a bluez 5 profile object for our keyboard
 class BTHIDBluezProfile(dbus.service.Object):
@@ -107,8 +107,8 @@ class BTJoystick:
     #listen for incoming client connections
     def listen(self):
         print("Waiting for connections")
-        self.scontrol=bluetooth.BluetoothSocket(bluetooth.L2CAP)
-        self.sinterrupt=bluetooth.BluetoothSocket(bluetooth.L2CAP)
+        self.scontrol= BluetoothSocket(L2CAP)
+        self.sinterrupt=BluetoothSocket(L2CAP)
 
         #bind these sockets to a port
         self.scontrol.bind((self.MY_ADDRESS, self.P_CTRL))
@@ -143,10 +143,10 @@ class BTHIDService(dbus.service.Object):
         dbus.service.Object.__init__(self, bus_name, "/nl/rug/ds/heerkog/bthidservice")
 
         #create and setup our device
-        self.device = BTJoystick();
+        self.device = BTJoystick()
 
         #start listening for connections
-        #self.device.listen();
+        self.device.listen()
 
     @dbus.service.method("nl.rug.ds.heerkog.bthidservice", in_signature="ay")
     def send_input_report(self, report):
@@ -160,5 +160,5 @@ if __name__ == "__main__":
         sys.exit("Only root can run this script")
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    mainloop = GObject.MainLoop()
+    mainloop = GLib.MainLoop()
     myservice = BTHIDService()
