@@ -4,7 +4,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
-from bluetooth import BluetoothSocket, L2CAP
+import socket
 
 #define a bluez 5 profile object for our keyboard
 class BTHIDBluezProfile(dbus.service.Object):
@@ -107,8 +107,8 @@ class BTJoystick:
     #listen for incoming client connections
     def listen(self):
         print("Waiting for connections")
-        self.scontrol= BluetoothSocket(L2CAP)
-        self.sinterrupt=BluetoothSocket(L2CAP)
+        self.scontrol = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+        self.sinterrupt = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
 
         #bind these sockets to a port
         self.scontrol.bind((self.MY_ADDRESS, self.P_CTRL))
