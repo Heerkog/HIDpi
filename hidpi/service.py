@@ -3,7 +3,7 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-import GLib.MainLoop
+from gi.repository import GLib.MainLoop
 from bluetooth import BluetoothSocket, L2CAP
 
 #define a bluez 5 profile object for our keyboard
