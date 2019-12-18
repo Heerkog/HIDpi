@@ -159,7 +159,7 @@ if __name__ == "__main__":
     if not os.geteuid() == 0:
         sys.exit("Only root can run this script")
 
-    DBusGMainLoop(set_as_default=True)
+    glib.DBusGMainLoop(set_as_default=True)
     myservice = BTHIDService()
-    mainloop = gobject.MainLoop()
+    mainloop = GObject.MainLoop()
     mainloop.run()
