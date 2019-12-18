@@ -91,8 +91,6 @@ class BTJoystick:
 
         print("Profile registered ")
 
-        mainloop.run()
-
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
         print("Reading service record: " + self.SDP_RECORD_PATH)
@@ -162,3 +160,4 @@ if __name__ == "__main__":
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     mainloop = GLib.MainLoop()
     myservice = BTHIDService()
+    mainloop.run()
