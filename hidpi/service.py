@@ -3,8 +3,7 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from dbus.mainloop.glib import DBusGMainLoop
-import bluetooth
+from gi.repository import GObject
 
 
 #define a bluez 5 profile object for our keyboard
@@ -14,7 +13,7 @@ class BTHIDBluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
         print("Release")
-        dbus.mainloop.quit()
+        mainloop.quit()
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Cancel(self):
@@ -151,7 +150,7 @@ class BTHIDService(dbus.service.Object):
 
     @dbus.service.method("nl.rug.ds.heerkog.bthidservice", in_signature="ay")
     def send_input_report(self, report):
-        self.device.send_input_report(report);
+        self.device.send_input_report(report)
 
 
 #main routine
@@ -161,4 +160,6 @@ if __name__ == "__main__":
         sys.exit("Only root can run this script")
 
     DBusGMainLoop(set_as_default=True)
-    myservice = BTHIDService();
+    myservice = BTHIDService()
+    mainloop = gobject.MainLoop()
+    mainloop.run()
