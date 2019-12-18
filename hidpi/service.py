@@ -145,7 +145,7 @@ class BTHIDService(dbus.service.Object):
         self.device = BTJoystick();
 
         #start listening for connections
-        self.device.listen();
+        #self.device.listen();
 
     @dbus.service.method("nl.rug.ds.heerkog.bthidservice", in_signature="ay")
     def send_input_report(self, report):
