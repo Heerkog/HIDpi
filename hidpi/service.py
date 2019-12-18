@@ -92,6 +92,8 @@ class BTJoystick:
 
         print("Profile registered ")
 
+        dbus.mainloop.run()
+
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
         print("Reading service record: " + self.SDP_RECORD_PATH)
