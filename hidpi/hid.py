@@ -1,15 +1,10 @@
-import dbus
-import dbus.service
-import dbus.mainloop.glib
-from gi.repository import GLib
 from gpiozero import Button
-from signal import pause
 
 
 #Class that represents the Joystick state
 class Joystick:
 
-    def __init__(self):
+    def __init__(self, service):
         #Define the Joystick state
         self.state = [
             0xA1,  #this is an input report
@@ -18,12 +13,7 @@ class Joystick:
             0x00,  #Y-axis between -127 and 127
             0x00]  #unsigned char representing 3 buttons, rest empty
 
-        print("Setting up DBus Client")
-
-        #Set up dbus client
-        self.bus = dbus.SystemBus()
-        self.btkservice = self.bus.get_object("nl.rug.ds.heerkog.bthidservice","/nl/rug/ds/heerkog/bthidservice")
-        self.iface = dbus.Interface(self.btkservice,"nl.rug.ds.heerkog.bthidservice")
+        self.service = service
 
         #Set up GPIO input
         self.up_button = Button("GPIO17")     #Up signal
@@ -43,11 +33,11 @@ class Joystick:
 
     def x_axis_event(self):
         self.state[2] = hex((self.up_button.is_pressed - self.down_button.is_pressed) * 127)
-        self.iface.send_input_report(self.state)
+        self.service.send_input_report(self.state)
 
     def y_axis_event(self):
         self.state[3] = hex((self.right_button.is_pressed - self.left_button.is_pressed) * 127)
-        self.iface.send_input_report(self.state)
+        self.service.send_input_report(self.state)
 
     def set_button1_down(self):
         self.state[4] = self.state[4] + 0x80;
@@ -66,9 +56,3 @@ class Joystick:
 
     def set_button3_up(self):
         self.state[4] = self.state[4] - 0x20;
-
-if __name__ == "__main__":
-    print("Setting up Joystick")
-
-    joystick = Joystick()
-    pause()
