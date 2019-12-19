@@ -5,13 +5,15 @@ import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 from hidpi.hid import Joystick
-import socket
 
 global mainloop
 
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
-    fd = -1
+    file_descriptor = -1
+
+    def __init__(self, bus, path):
+        dbus.service.Object.__init__(self, bus, path)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -23,55 +25,50 @@ class BluezProfile(dbus.service.Object):
         print("Cancel")
 
     @dbus.service.method("org.bluez.Profile1", in_signature="oha{sv}", out_signature="")
-    def NewConnection(self, path, fd, properties):
-        self.fd = fd.take()
-        print("NewConnection(%s, %d)" % (path, self.fd))
+    def NewConnection(self, path, file_descriptor, properties):
+        self.file_descriptor = file_descriptor.take()
+
+        print("NewConnection(%s, %d)" % (path, self.file_descriptor))
+
         for key in properties.keys():
             if key == "Version" or key == "Features":
                 print("  %s = 0x%04x" % (key, properties[key]))
             else:
                 print("  %s = %s" % (key, properties[key]))
 
+        GLib.io_add_watch(self.file_descriptor, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_cb)
+
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
         print("RequestDisconnection(%s)" % (path))
 
-        if (self.fd > 0):
-            os.close(self.fd)
-            self.fd = -1
+        if (self.file_descriptor > 0):
+            os.close(self.file_descriptor)
+            self.file_descriptor = -1
 
-    def __init__(self, bus, path):
-        dbus.service.Object.__init__(self, bus, path)
+    def io_callback(self, file_descriptor, conditions):
+        data = os.read(file_descriptor, 1024)
+        print("{0}".format(data.decode('ascii')))
+        return True
+
+    def io_write(self, value):
+        try:
+            os.write(self.file_descriptor, value.encode('utf8'))
+        except ConnectionResetError:
+            self.file_descriptor = -1
 
 
 #create a bluetooth device to emulate a HID joystick
 class BTJoystick:
     MY_ADDRESS = "B8:27:EB:77:31:44"
     MY_DEV_NAME = "RPi_HID_Joystick"
-    control_port = 37  #17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
-    interrupt_port = 39  #19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
+    control_port = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
+    interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     PROFILE_DBUS_PATH="/bluez/heerkog/bthid_profile"  #dbus path of the bluez profile
     SDP_RECORD_PATH = sys.path[0] + "/sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID="00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
-        print("Setting up BT device")
-        self.init_bt_device()
-        self.init_bluez_profile()
-
-    #configure the bluetooth hardware device
-    def init_bt_device(self):
-        print("Configuring for name " + self.MY_DEV_NAME)
-        #set the device class to a joystick and set the name
-        os.system("hciconfig hci0 up")
-        os.system("hciconfig hcio class 0x000508")
-        os.system("hciconfig hcio name " + self.MY_DEV_NAME)
-
-        #make the device discoverable
-        os.system("hciconfig hcio piscan")
-
-    #set up a bluez profile to advertise device capabilities from a loaded service record
-    def init_bluez_profile(self):
         print("Configuring Bluez Profile")
 
         #setup profile options
@@ -80,19 +77,32 @@ class BTJoystick:
         opts = {
             "ServiceRecord": service_record,
             "Role": "server",
+            "Name": self.MY_DEV_NAME,
+            "Service": self.UUID,
+            "PSM": 17,
+            "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False
         }
 
         #retrieve a proxy for the bluez profile interface
-        bus = dbus.SystemBus()
-        manager = dbus.Interface(bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
+        system_bus = dbus.SystemBus()
+        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
 
-        profile = BluezProfile(bus, self.PROFILE_DBUS_PATH)
+        mainloop = GLib.MainLoop()
 
-        manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
+        adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
+        adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
+        adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
+
+        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
+
+        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered ")
+
+        mainloop.run()
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
@@ -105,50 +115,12 @@ class BTJoystick:
 
         return fh.read()
 
-    #listen for incoming client connections
-    def listen(self):
-        print("Waiting for connections")
-        self.control_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
-        self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
-
-        #Set sockets to non-blocking
-        self.control_socket.setblocking(0)
-        self.interrupt_socket.setblocking(0)
-
-        #bind these sockets to a port
-        self.control_socket.bind((self.MY_ADDRESS, self.control_port))
-        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
-
-        #Start listening on the server sockets with limit of 1 connection
-        self.control_socket.listen(1)
-        self.interrupt_socket.listen(1)
-
-        #Define channels
-        self.control_channel = None
-        self.interrupt_channel = None
-
-        #Watch sockets
-        GLib.io_add_watch(self.control_socket.fileno(), GLib.IO_IN, self.accept_control)
-        GLib.io_add_watch(self.interrupt_socket.fileno(), GLib.IO_IN, self.accept_interrupt)
-
-        print("Watching sockets")
-
-    def accept_control(self, source, cond):
-        self.control_channel, cinfo = self.control_socket.accept()
-        print("Got a connection on the control channel from " + cinfo[0])
-        return True
-
-    def accept_interrupt(self, source, cond):
-        self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        print("Got a connection on the interrupt channel from " + cinfo[0])
-        return True
-
     #send a string to the bluetooth host machine
     def send_input_report(self, report):
         message = chr(report[0]) + chr(report[1]) + chr(report[2]) + chr(report[3]) + chr(report[4])
 
         print("Sending "+ message)
-        self.interrupt_channel.send(message)
+        self.profile.io_write(message)
 
 
 #define a dbus HID service
@@ -160,12 +132,7 @@ class BTHIDService(dbus.service.Object):
         self.joystick = Joystick(self)
 
         #create and setup our device
-        mainloop = GLib.MainLoop()
         self.device = BTJoystick()
-
-        #start listening for connections
-        self.device.listen()
-        mainloop.run()
 
     def send_input_report(self, report):
         self.device.send_input_report(report)
