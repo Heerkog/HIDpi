@@ -7,7 +7,7 @@ from gi.repository import GLib
 import socket
 
 #define a bluez 5 profile object for our keyboard
-class BTHIDBluezProfile(dbus.service.Object):
+class BluezProfile(dbus.service.Object):
     fd = -1
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
@@ -45,8 +45,8 @@ class BTHIDBluezProfile(dbus.service.Object):
 class BTJoystick:
     MY_ADDRESS = "B8:27:EB:77:31:44"
     MY_DEV_NAME = "RPi_HID_Joystick"
-    P_CTRL = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
-    P_INTR = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
+    P_CTRL = 37  #17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
+    P_INTR = 39  #19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     PROFILE_DBUS_PATH="/bluez/heerkog/bthid_profile"  #dbus path of the bluez profile
     SDP_RECORD_PATH = sys.path[0] + "/../sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID="00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
@@ -85,7 +85,7 @@ class BTJoystick:
         bus = dbus.SystemBus()
         manager = dbus.Interface(bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
 
-        profile = BTHIDBluezProfile(bus, self.PROFILE_DBUS_PATH)
+        profile = BluezProfile(bus, self.PROFILE_DBUS_PATH)
 
         manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
