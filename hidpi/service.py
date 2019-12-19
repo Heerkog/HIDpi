@@ -4,6 +4,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
+from gi.repository import GObject
 import socket
 
 #define a bluez 5 profile object for our keyboard
@@ -105,24 +106,40 @@ class BTJoystick:
     #listen for incoming client connections
     def listen(self):
         print("Waiting for connections")
-        self.scontrol = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
-        self.sinterrupt = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+        self.control_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+        self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+
+        #Set sockets to non-blocking
+        self.control_socket.setblocking(0)
+        self.interrupt_socket.setblocking(0)
 
         #bind these sockets to a port
-        self.scontrol.bind((self.MY_ADDRESS, self.P_CTRL))
-        self.sinterrupt.bind((self.MY_ADDRESS, self.P_INTR ))
+        self.control_socket.bind((self.MY_ADDRESS, self.P_CTRL))
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.P_INTR))
 
-        #Start listening on the server sockets
-        self.scontrol.listen(1) # Limit of 1 connection
-        self.sinterrupt.listen(1)
+        #Start listening on the server sockets with limit of 1 connection
+        self.control_socket.listen(1)
+        self.interrupt_socket.listen(1)
 
-        print("Accepting")
-        self.ccontrol, cinfo = self.scontrol.accept()
+        #Define channels
+        self.control_channel = None
+        self.interrupt_channel = None
+
+        #Watch sockets
+        GObject.io_add_watch(self.control_socket.fileno(), GObject.IO_IN, self.accept_control)
+        GObject.io_add_watch(self.interrupt_socket.fileno(), GObject.IO_IN, self.accept_interrupt)
+
+        print("Watching sockets")
+
+    def accept_control(self, source, cond):
+        self.control_channel, cinfo = self.control_socket.accept()
         print("Got a connection on the control channel from " + cinfo[0])
+        return True
 
-        self.cinterrupt, cinfo = self.sinterrupt.accept()
+    def accept_interrupt(self, source, cond):
+        self.interrupt_channel, cinfo = self.interrupt_socket.accept()
         print("Got a connection on the interrupt channel from " + cinfo[0])
-
+        return True
 
     #send a string to the bluetooth host machine
     def send_input_report(self, report):
