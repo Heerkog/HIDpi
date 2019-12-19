@@ -3,9 +3,11 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from gi.repository import Gtk
+from gi.repository import GLib
 from hidpi.hid import Joystick
 import socket
+
+global mainloop
 
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
@@ -14,7 +16,7 @@ class BluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
         print("Release")
-        Gtk.main().quit()
+        mainloop.quit()
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Cancel(self):
@@ -158,10 +160,12 @@ class BTHIDService(dbus.service.Object):
         self.joystick = Joystick(self)
 
         #create and setup our device
+        mainloop = GLib.MainLoop()
         self.device = BTJoystick()
 
         #start listening for connections
         self.device.listen()
+        mainloop.run()
 
     def send_input_report(self, report):
         self.device.send_input_report(report)
