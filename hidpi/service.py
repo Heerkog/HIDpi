@@ -3,7 +3,7 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from gi.repository import GLib
+from gi.repository import Gtk
 from hidpi.hid import Joystick
 import socket
 
@@ -14,7 +14,7 @@ class BluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
         print("Release")
-        mainloop.quit()
+        Gtk.main().quit()
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Cancel(self):
