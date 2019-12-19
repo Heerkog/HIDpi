@@ -32,14 +32,14 @@ class Joystick:
         self.right_button = Button("GPIO23")  #Right signal
 
         #Bind state update methods to events
-        self.up_button.when_pressed = x_axis_event
-        self.up_button.when_released = x_axis_event
-        self.down_button.when_pressed = x_axis_event
-        self.down_button.when_released = x_axis_event
-        self.left_button.when_pressed = y_axis_event
-        self.left_button.when_released = y_axis_event
-        self.right_button.when_pressed = y_axis_event
-        self.right_button.when_released = y_axis_event
+        self.up_button.when_pressed = self.x_axis_event
+        self.up_button.when_released = self.x_axis_event
+        self.down_button.when_pressed = self.x_axis_event
+        self.down_button.when_released = self.x_axis_event
+        self.left_button.when_pressed = self.y_axis_event
+        self.left_button.when_released = self.y_axis_event
+        self.right_button.when_pressed = self.y_axis_event
+        self.right_button.when_released = self.y_axis_event
 
     def x_axis_event(self):
         self.state[2] = hex((self.up_button.is_pressed - self.down_button.is_pressed) * 127)
