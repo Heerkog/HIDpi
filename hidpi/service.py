@@ -82,6 +82,8 @@ class BTJoystick:
             "Role": "server",
             "Name": self.MY_DEV_NAME,
             "Service": "0x000508",
+            "PSM": dbus.UInt16(17),
+            "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False
         }
