@@ -94,8 +94,8 @@ class BTJoystick:
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
-        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
 
         print("Profile registered {0}".format(opts))
 
