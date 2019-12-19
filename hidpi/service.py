@@ -79,7 +79,11 @@ class BTJoystick:
 
         opts = {
             "ServiceRecord": service_record,
-            "Role": "server", #"Name": self.MY_DEV_NAME, "Service": self.UUID, "Channel": dbus.UInt16(1), "PSM": dbus.UInt16(17),
+            "Role": "server",
+            "Name": self.MY_DEV_NAME,
+            "Service": self.UUID,
+            "Channel": dbus.UInt16(1),
+            "PSM": dbus.UInt16(17),
             "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False
