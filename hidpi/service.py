@@ -145,7 +145,7 @@ class BTJoystick:
         message = chr(report[0]) + chr(report[1]) + chr(report[2]) + chr(report[3]) + chr(report[4])
 
         print("Sending "+ message)
-        self.cinterrupt.send(message)
+        self.interrupt_channel.send(message)
 
 
 #define a dbus HID service
@@ -153,6 +153,7 @@ class BTHIDService(dbus.service.Object):
 
     def __init__(self):
         print("Setting up service")
+
         #set up as a dbus service
         bus_name = dbus.service.BusName("nl.rug.ds.heerkog.bthidservice", bus=dbus.SystemBus())
         dbus.service.Object.__init__(self, bus_name, "/nl/rug/ds/heerkog/bthidservice")
