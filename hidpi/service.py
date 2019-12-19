@@ -38,7 +38,7 @@ class BluezProfile(dbus.service.Object):
             else:
                 print("  %s = %s" % (key, properties[key]))
 
-        GLib.io_add_watch(self.file_descriptor, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_cb)
+        GLib.io_add_watch(self.file_descriptor, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_callback)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
@@ -80,8 +80,6 @@ class BTJoystick:
         opts = {
             "ServiceRecord": service_record,
             "Role": "server",
-            "Name": self.MY_DEV_NAME,
-            "Service": "0x000508",
             "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False
