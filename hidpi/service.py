@@ -113,8 +113,8 @@ class BTJoystick:
         self.interrupt_socket.setblocking(0)
 
         #bind these sockets to a port
-        self.control_socket.bind((self.MY_ADDRESS, self.P_CTRL))
-        self.interrupt_socket.bind((self.MY_ADDRESS, self.P_INTR))
+        self.control_socket.bind(("", self.P_CTRL))
+        self.interrupt_socket.bind(("", self.P_INTR))
 
         #Start listening on the server sockets with limit of 1 connection
         self.control_socket.listen(1)
