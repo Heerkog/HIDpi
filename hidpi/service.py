@@ -66,11 +66,12 @@ class BTJoystick:
     MY_DEV_NAME = "RPi_HID_Joystick"
     control_port = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
-    PROFILE_DBUS_PATH="/bluez/heerkog/bthid_profile"  #dbus path of the bluez profile
+    PROFILE_DBUS_PATH = "/bluez/heerkog/bthid_profile"  #dbus path of the bluez profile
     SDP_RECORD_PATH = sys.path[0] + "/sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
-    UUID="00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
+    UUID = "0x1124"  #"00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
+        mainloop = GLib.MainLoop()
         print("Configuring Bluez Profile")
 
         #setup profile options
@@ -78,9 +79,7 @@ class BTJoystick:
 
         opts = {
             "ServiceRecord": service_record,
-            "Role": "server",
-            "Name": self.MY_DEV_NAME, #"Service": self.UUID, "Channel": dbus.UInt16(1),
-            "PSM": dbus.UInt16(17),
+            "Role": "server", #"Name": self.MY_DEV_NAME, "Service": self.UUID, "Channel": dbus.UInt16(1), "PSM": dbus.UInt16(17),
             "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False
@@ -88,20 +87,17 @@ class BTJoystick:
 
         #retrieve a proxy for the bluez profile interface
         system_bus = dbus.SystemBus()
-        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
-
-        mainloop = GLib.MainLoop()
 
         adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
         adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
         adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
+        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
         self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
-
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
-        print("Profile registered ")
+        print("Profile registered " + opts)
 
         mainloop.run()
 
