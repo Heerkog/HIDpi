@@ -81,6 +81,7 @@ class BTJoystick:
             "ServiceRecord": service_record,
             "Role": "server",
             "Name": self.MY_DEV_NAME,
+            "Service": "0x000508",
             "RequireAuthentication": False,
             "RequireAuthorization": False
         }
