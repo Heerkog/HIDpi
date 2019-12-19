@@ -4,7 +4,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
-import hidpi.hid
+from hidpi.hid import Joystick
 import socket
 
 #define a bluez 5 profile object for our keyboard
@@ -155,7 +155,7 @@ class BTHIDService(dbus.service.Object):
     def __init__(self):
         print("Setting up service")
         #create joystick class
-        self.joystick = hidpi.hid.Joystick(self)
+        self.joystick = Joystick(self)
 
         #create and setup our device
         self.device = BTJoystick()
@@ -165,16 +165,3 @@ class BTHIDService(dbus.service.Object):
 
     def send_input_report(self, report):
         self.device.send_input_report(report)
-
-
-#main routine
-if __name__ == "__main__":
-    # we an only run as root
-    if not os.geteuid() == 0:
-        sys.exit("Only root can run this script")
-
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    myservice = BTHIDService()
-    GLib.threads_init()
-    mainloop = GLib.MainLoop()
-    mainloop.run()
