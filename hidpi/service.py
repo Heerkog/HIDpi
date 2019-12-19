@@ -116,6 +116,7 @@ class BTJoystick:
         self.scontrol.listen(1) # Limit of 1 connection
         self.sinterrupt.listen(1)
 
+        print("Accepting")
         self.ccontrol, cinfo = self.scontrol.accept()
         print("Got a connection on the control channel from " + cinfo[0])
 
