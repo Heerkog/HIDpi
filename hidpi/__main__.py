@@ -11,6 +11,6 @@ if __name__ == '__main__':
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     myservice = BTHIDService()
-    GLib.threads_init()
+
     mainloop = GLib.MainLoop()
     mainloop.run()
