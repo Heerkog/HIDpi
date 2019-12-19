@@ -5,6 +5,7 @@ import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 from hidpi.hid import Joystick
+import socket
 
 global mainloop
 
@@ -27,6 +28,7 @@ class BluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="oha{sv}", out_signature="")
     def NewConnection(self, path, file_descriptor, properties):
         self.file_descriptor = file_descriptor.take()
+        #self.control_channel = socket.fromfd(file_descriptor, socket.AF_BLUETOOTH, socket.SOCK_STREAM)
 
         print("NewConnection(%s, %d)" % (path, self.file_descriptor))
 
@@ -79,7 +81,8 @@ class BTJoystick:
             "Role": "server",
             "Name": self.MY_DEV_NAME,
             "Service": self.UUID,
-            "PSM": 17,
+            "Channel": dbus.UInt16(1),
+            "PSM": dbus.UInt16(17),
             "AutoConnect": True,
             "RequireAuthentication": False,
             "RequireAuthorization": False

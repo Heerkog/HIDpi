@@ -3,7 +3,7 @@
 <record>
 	<attribute id="0x0001">
 		<sequence>
-			<uuid value="0x1124" />
+			<uuid value="00001124-0000-1000-8000-00805f9b34fb" />
 		</sequence>
 	</attribute>
 	<attribute id="0x0004">
