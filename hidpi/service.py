@@ -4,7 +4,6 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
-from gi.repository import GObject
 import socket
 
 #define a bluez 5 profile object for our keyboard
@@ -126,8 +125,8 @@ class BTJoystick:
         self.interrupt_channel = None
 
         #Watch sockets
-        GObject.io_add_watch(self.control_socket.fileno(), GObject.IO_IN, self.accept_control)
-        GObject.io_add_watch(self.interrupt_socket.fileno(), GObject.IO_IN, self.accept_interrupt)
+        GLib.io_add_watch(self.control_socket.fileno(), GLib.IO_IN, self.accept_control)
+        GLib.io_add_watch(self.interrupt_socket.fileno(), GLib.IO_IN, self.accept_interrupt)
 
         print("Watching sockets")
 
