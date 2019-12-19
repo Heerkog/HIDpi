@@ -97,7 +97,7 @@ class BTJoystick:
         self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
-        print("Profile registered " + opts)
+        print("Profile registered {0}".format(opts))
 
         mainloop.run()
 
