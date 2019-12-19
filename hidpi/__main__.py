@@ -1,4 +1,6 @@
 from hidpi.service import BTHIDService
+import os
+import sys
 import dbus.mainloop.glib
 from gi.repository import GLib
 
