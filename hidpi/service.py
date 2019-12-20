@@ -16,7 +16,6 @@ class BluezProfile(dbus.service.Object):
     def __init__(self, bus, path):
         print("Init")
         dbus.service.Object.__init__(self, bus, path)
-        print(dbus.service.Object.Introspect(path))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -68,7 +67,7 @@ class BTJoystick:
     MY_DEV_NAME = "RPi_HID_Joystick"
     control_port = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
-    PROFILE_DBUS_PATH = "/bluez/heerkog/bthid_profile"  #dbus path of the bluez profile
+    PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
     SDP_RECORD_PATH = sys.path[0] + "/sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
@@ -96,8 +95,8 @@ class BTJoystick:
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
-        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
         self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
+        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered")
 
