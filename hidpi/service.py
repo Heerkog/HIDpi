@@ -22,7 +22,7 @@ class BluezProfile(dbus.service.Object):
 
         self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
         self.interrupt_socket.setblocking(0)
-        self.interrupt_socket.bind(("", self.interrupt_port))
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
         self.interrupt_socket.listen(1)
         GLib.io_add_watch(self.interrupt_socket.fileno(), GLib.IO_IN, self.accept_interrupt)
 
