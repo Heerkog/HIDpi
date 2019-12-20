@@ -11,13 +11,20 @@ global mainloop
 
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
+    MY_ADDRESS = "B8:27:EB:77:31:44"
+    interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     file_descriptor = -1
+    control_channel = None
+    interrupt_channel = None
 
     def __init__(self, bus, path):
-        print("Init")
         dbus.service.Object.__init__(self, bus, path)
-        for item in dbus.service.Object.locations:
-            print("{0}".format(item))
+
+        self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+        self.interrupt_socket.setblocking(0)
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
+        self.interrupt_socket.listen(1)
+        GLib.io_add_watch(self.interrupt_socket.fileno(), GLib.IO_IN, self.accept_interrupt)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -31,7 +38,7 @@ class BluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="oha{sv}", out_signature="")
     def NewConnection(self, path, file_descriptor, properties):
         self.file_descriptor = file_descriptor.take()
-        #self.control_channel = socket.fromfd(file_descriptor, socket.AF_BLUETOOTH, socket.SOCK_STREAM)
+        self.control_channel = socket.fromfd(file_descriptor, socket.AF_BLUETOOTH, socket.SOCK_STREAM)
 
         print("NewConnection(%s, %d)" % (path, self.file_descriptor))
 
@@ -41,7 +48,7 @@ class BluezProfile(dbus.service.Object):
             else:
                 print("  %s = %s" % (key, properties[key]))
 
-        GLib.io_add_watch(self.file_descriptor, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_callback)
+        GLib.io_add_watch(self.control_channel, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.control_callback)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
@@ -50,18 +57,30 @@ class BluezProfile(dbus.service.Object):
         if (self.file_descriptor > 0):
             os.close(self.file_descriptor)
             self.file_descriptor = -1
+            self.control_channel.close()
+            self.interrupt_channel.close()
 
-    def io_callback(self, file_descriptor, conditions):
+    def control_callback(self, file_descriptor, conditions):
         data = os.read(file_descriptor, 1024)
-        print("{0}".format(data.decode('ascii')))
+        print("{0}".format(data))
         return True
 
-    def io_write(self, value):
+    def interrupt_callback(self, file_descriptor, conditions):
+        data = os.read(file_descriptor, 1024)
+        print("{0}".format(data))
+        return True
+
+    def interrupt_write(self, value):
         try:
             os.write(self.file_descriptor, value.encode('utf8'))
         except ConnectionResetError:
             self.file_descriptor = -1
 
+    def accept_interrupt(self, source, cond):
+        self.interrupt_channel, cinfo = self.interrupt_socket.accept()
+        GLib.io_add_watch(self.interrupt_channel, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_callback)
+        print("Got a connection on the interrupt channel from " + cinfo[0])
+        return True
 
 #create a bluetooth device to emulate a HID joystick
 class BTJoystick:
@@ -120,7 +139,7 @@ class BTJoystick:
         message = chr(report[0]) + chr(report[1]) + chr(report[2]) + chr(report[3]) + chr(report[4])
 
         print("Sending "+ message)
-        self.profile.io_write(message)
+        self.profile.interrupt_write(message)
 
 
 #define a dbus HID service
