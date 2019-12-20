@@ -12,7 +12,7 @@ global mainloop
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
     MY_ADDRESS = "B8:27:EB:77:31:44"
-    interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
+    interrupt_port = 17  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     file_descriptor = -1
     control_channel = None
     interrupt_channel = None
