@@ -3,7 +3,7 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-import glib
+from gi.repository import GLib as glib
 from hidpi.hid import Joystick
 import socket
 
