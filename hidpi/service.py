@@ -6,6 +6,7 @@ import dbus.mainloop.glib
 from gi.repository import GLib as glib
 from hidpi.hid import Joystick
 import socket
+import bluetooth
 
 global mainloop
 
@@ -20,9 +21,9 @@ class BluezProfile(dbus.service.Object):
     def __init__(self, bus, path):
         dbus.service.Object.__init__(self, bus, path)
 
-        self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
+        self.interrupt_socket = bluetooth.BluetoothSocket(bluetooth.L2CAP)  #socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
         self.interrupt_socket.setblocking(0)
-        self.interrupt_socket.connect((self.MY_ADDRESS, self.interrupt_port))
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
         self.interrupt_socket.listen(1)
         glib.io_add_watch(self.interrupt_socket.fileno(), glib.IO_IN, self.accept_interrupt)
 
