@@ -14,7 +14,9 @@ class BluezProfile(dbus.service.Object):
     file_descriptor = -1
 
     def __init__(self, bus, path):
+        print("Init")
         dbus.service.Object.__init__(self, bus, path)
+        print(dbus.service.Object.Introspect(path))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
