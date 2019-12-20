@@ -3,7 +3,7 @@ import sys
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from gi.repository import GLib
+import glib
 from hidpi.hid import Joystick
 import socket
 
@@ -12,7 +12,7 @@ global mainloop
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
     MY_ADDRESS = "B8:27:EB:77:31:44"
-    interrupt_port = 29  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
+    interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     file_descriptor = -1
     control_channel = None
     interrupt_channel = None
@@ -22,9 +22,9 @@ class BluezProfile(dbus.service.Object):
 
         self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
         self.interrupt_socket.setblocking(0)
-        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
-        self.interrupt_socket.listen(1)
-        GLib.io_add_watch(self.interrupt_socket.fileno(), GLib.IO_IN, self.accept_interrupt)
+        #self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
+        #self.interrupt_socket.listen(1)
+        #glib.io_add_watch(self.interrupt_socket.fileno(), glib.IO_IN, self.accept_interrupt)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -48,7 +48,7 @@ class BluezProfile(dbus.service.Object):
             else:
                 print("  %s = %s" % (key, properties[key]))
 
-        GLib.io_add_watch(self.control_channel, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.control_callback)
+        glib.io_add_watch(self.control_channel, glib.PRIORITY_DEFAULT, glib.IO_IN | glib.IO_PRI, self.control_callback)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
@@ -78,7 +78,7 @@ class BluezProfile(dbus.service.Object):
 
     def accept_interrupt(self, source, cond):
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        GLib.io_add_watch(self.interrupt_channel, GLib.PRIORITY_DEFAULT, GLib.IO_IN | GLib.IO_PRI, self.io_callback)
+        glib.io_add_watch(self.interrupt_channel, glib.PRIORITY_DEFAULT, glib.IO_IN | glib.IO_PRI, self.io_callback)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return True
 
@@ -93,7 +93,7 @@ class BTJoystick:
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
-        mainloop = GLib.MainLoop()
+        mainloop = glib.MainLoop()
         print("Configuring Bluez Profile")
 
         #setup profile options
