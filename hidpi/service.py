@@ -16,8 +16,8 @@ class BluezProfile(dbus.service.Object):
     def __init__(self, bus, path):
         print("Init")
         dbus.service.Object.__init__(self, bus, path)
-        print("{0}".format(dbus.service.Object.locations()))
-        print("{0}".format(dbus.service.Object.connection()))
+        print("{0}".format(dbus.service.Object.locations))
+        print("{0}".format(dbus.service.Object.connection))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
