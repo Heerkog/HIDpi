@@ -18,8 +18,9 @@ class BluezProfile(dbus.service.Object):
     file_descriptor = -1
     interrupt_channel = None
 
-    def __init__(self, bus, path):
-        super().__init__(bus, path)
+    def __init__(self, bus, name, path):
+        bus_name=dbus.service.BusName(name,bus)
+        dbus.service.Object.__init__(self, bus_name, path)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -99,14 +100,14 @@ class BTHIDService:
         adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
-        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
+        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
 
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered")
 
-        self.rec_intro(system_bus, "org.bluez", "/org/bluez")
+        self.rec_intro(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
 
         mainloop.run()
 
