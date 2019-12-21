@@ -2,11 +2,12 @@ import os
 import sys
 import dbus
 import dbus.service
-import dbus.mainloop.glib
 from gi.repository import GLib as glib
+from dbus.mainloop.glib import DBusGMainLoop
 from hidpi.hid import Joystick
 import socket
 
+DBusGMainLoop(set_as_default=True)
 global mainloop
 
 #define a bluez 5 profile object for our keyboard
@@ -14,8 +15,8 @@ class BluezProfile(dbus.service.Object):
     file_descriptor = -1
     interrupt_channel = None
 
-    def __init__(self, bus, name, path):
-        dbus.service.Object.__init__(self, name, path)
+    def __init__(self, bus, path):
+        super().__init__(bus, path)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -61,7 +62,7 @@ class BluezProfile(dbus.service.Object):
             self.file_descriptor = -1
 
 #create a bluetooth device to emulate a HID joystick
-class BTJoystick:
+class BTHIDService:
     MY_DEV_NAME = "RPi_HID_Joystick"
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
     PROFILE_DBUS_NAME = "nl.rug.ds.heerkog.hid"  #dbus mame of the bluez profile
@@ -69,6 +70,10 @@ class BTJoystick:
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
+        print("Setting up service")
+        #create joystick class
+        self.joystick = Joystick(self)
+
         mainloop = glib.MainLoop()
         print("Configuring Bluez Profile")
 
@@ -91,10 +96,7 @@ class BTJoystick:
         adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
-
-        system_bus.request_name(self.PROFILE_DBUS_NAME)
-        bus_name = dbus.service.BusName(self.PROFILE_DBUS_NAME, system_bus)
-        self.profile = BluezProfile(system_bus, bus_name, self.PROFILE_DBUS_PATH)
+        self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
 
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
@@ -120,18 +122,3 @@ class BTJoystick:
 
         print("Sending "+ message)
         self.profile.interrupt_write(message)
-
-
-#define a dbus HID service
-class BTHIDService(dbus.service.Object):
-
-    def __init__(self):
-        print("Setting up service")
-        #create joystick class
-        self.joystick = Joystick(self)
-
-        #create and setup our device
-        self.device = BTJoystick()
-
-    def send_input_report(self, report):
-        self.device.send_input_report(report)
