@@ -6,6 +6,8 @@ from gi.repository import GLib as glib
 from dbus.mainloop.glib import DBusGMainLoop
 from hidpi.hid import Joystick
 import socket
+from xml.etree import ElementTree
+
 
 DBusGMainLoop(set_as_default=True)
 
@@ -17,7 +19,7 @@ class BluezProfile(dbus.service.Object):
     interrupt_channel = None
 
     def __init__(self, bus, path):
-        super().__init__(bus, path)
+        super().__init__(self, bus, path)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -92,17 +94,19 @@ class BTHIDService:
         #retrieve a proxy for the bluez profile interface
         system_bus = dbus.SystemBus()
 
-        # adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
-        # adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
-        # adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
-        # adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
+        adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
+        adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
+        adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
+        adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
         self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_PATH)
 
-        # profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
-        # profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
+        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered")
+
+        self.rec_intro(system_bus, "org.bluez", self.PROFILE_DBUS_PATH)
 
         mainloop.run()
 
@@ -123,3 +127,15 @@ class BTHIDService:
 
         print("Sending "+ message)
         self.profile.interrupt_write(message)
+
+    def rec_intro(bus, service, object_path):
+        print(object_path)
+        obj = bus.get_object(service, object_path)
+        iface = dbus.Interface(obj, 'org.freedesktop.DBus.Introspectable')
+        xml_string = iface.Introspect()
+        for child in ElementTree.fromstring(xml_string):
+            if child.tag == 'node':
+                if object_path == '/':
+                    object_path = ''
+                new_path = '/'.join((object_path, child.attrib['name']))
+                rec_intro(bus, service, new_path)
