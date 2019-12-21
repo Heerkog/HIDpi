@@ -100,6 +100,21 @@ class BTHIDService:
         adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
+        self.relevant_ifaces = [ "org.bluez.Adapter1", "org.bluez.Device1" ]
+
+        system_bus.add_signal_receiver(self.property_changed, bus_name="org.bluez",
+                                       dbus_interface="org.freedesktop.DBus.Properties",
+                                       signal_name="PropertiesChanged",
+                                       path_keyword="path")
+
+        system_bus.add_signal_receiver(self.interfaces_added, bus_name="org.bluez",
+                                dbus_interface="org.freedesktop.DBus.ObjectManager",
+                                signal_name="InterfacesAdded")
+
+        system_bus.add_signal_receiver(self.interfaces_removed, bus_name="org.bluez",
+                                dbus_interface="org.freedesktop.DBus.ObjectManager",
+                                signal_name="InterfacesRemoved")
+
         self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
 
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
@@ -113,6 +128,27 @@ class BTHIDService:
         print("Profile ")
 
         mainloop.run()
+
+    def property_changed(self, interface, changed, invalidated, path):
+        iface = interface[interface.rfind(".") + 1:]
+        for name, value in changed.iteritems():
+            val = str(value)
+            print("{%s.PropertyChanged} [%s] %s = %s" % (iface, path, name,
+                                                         val))
+
+    def interfaces_added(self, path, interfaces):
+        for iface, props in interfaces.iteritems():
+            if not(iface in self.relevant_ifaces):
+                continue
+            print("{Added %s} [%s]" % (iface, path))
+            for name, value in props.iteritems():
+                print("      %s = %s" % (name, value))
+
+    def interfaces_removed(self, path, interfaces):
+        for iface in interfaces:
+            if not(iface in self.relevant_ifaces):
+                continue
+            print("{Removed %s} [%s]" % (iface, path))
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
