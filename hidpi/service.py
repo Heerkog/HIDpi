@@ -128,7 +128,7 @@ class BTHIDService:
         print("Sending "+ message)
         self.profile.interrupt_write(message)
 
-    def rec_intro(bus, service, object_path):
+    def rec_intro(self, bus, service, object_path):
         print(object_path)
         obj = bus.get_object(service, object_path)
         iface = dbus.Interface(obj, 'org.freedesktop.DBus.Introspectable')
