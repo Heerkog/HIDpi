@@ -107,8 +107,6 @@ class BTHIDService:
 
         print("Profile registered")
 
-        self.rec_intro(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
-
         mainloop.run()
 
     #read and return an sdp record from a file
@@ -128,15 +126,3 @@ class BTHIDService:
 
         print("Sending "+ message)
         self.profile.interrupt_write(message)
-
-    def rec_intro(self, bus, service, object_path):
-        print(object_path)
-        obj = bus.get_object(service, object_path)
-        iface = dbus.Interface(obj, 'org.freedesktop.DBus.Introspectable')
-        xml_string = iface.Introspect()
-        for child in ElementTree.fromstring(xml_string):
-            if child.tag == 'node':
-                if object_path == '/':
-                    object_path = ''
-                new_path = '/'.join((object_path, child.attrib['name']))
-                self.rec_intro(bus, service, new_path)
