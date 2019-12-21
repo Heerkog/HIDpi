@@ -83,38 +83,38 @@ class BTHIDService:
         self.listen()
 
         mainloop = glib.MainLoop()
-        print("Configuring Bluez Profile")
-
-        #setup profile options
-        service_record = self.read_sdp_service_record()
-
-        opts = {
-            "ServiceRecord": service_record,
-            "Role": "server",
-            "AutoConnect": True,
-            "RequireAuthentication": False,
-            "RequireAuthorization": False
-        }
-
-        #retrieve a proxy for the bluez profile interface
-        system_bus = dbus.SystemBus()
-
-        adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
-        adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
-        adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
-        adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
-
-        # self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
-
-        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
-        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
-
-        print("Profile registered")
-
-        # self.btkservice = system_bus.get_object(self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
-        # self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
-
-        print("Profile ")
+        # print("Configuring Bluez Profile")
+        #
+        # #setup profile options
+        # service_record = self.read_sdp_service_record()
+        #
+        # opts = {
+        #     "ServiceRecord": service_record,
+        #     "Role": "server",
+        #     "AutoConnect": True,
+        #     "RequireAuthentication": False,
+        #     "RequireAuthorization": False
+        # }
+        #
+        # #retrieve a proxy for the bluez profile interface
+        # system_bus = dbus.SystemBus()
+        #
+        # adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
+        # adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
+        # adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
+        # adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
+        #
+        # # self.profile = BluezProfile(system_bus, self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
+        #
+        # profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
+        # profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        #
+        # print("Profile registered")
+        #
+        # # self.btkservice = system_bus.get_object(self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
+        # # self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
+        #
+        # print("Profile ")
 
         mainloop.run()
 
