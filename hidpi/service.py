@@ -65,7 +65,7 @@ class BluezProfile(dbus.service.Object):
 
 #create a bluetooth device to emulate a HID joystick
 class BTHIDService:
-    MY_ADDRESS = "B8:27:EB:77:31:44"
+    MY_ADDRESS = ""  #"B8:27:EB:77:31:44"
     MY_DEV_NAME = "RPi_HID_Joystick"
     control_port = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     interrupt_port = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
