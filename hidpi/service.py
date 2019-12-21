@@ -3,13 +3,12 @@ import sys
 import dbus
 import dbus.service
 from gi.repository import GLib as glib
-from dbus.mainloop.glib import DBusGMainLoop
+import dbus.mainloop.glib
 from hidpi.hid import Joystick
 import socket
-from xml.etree import ElementTree
 
 
-DBusGMainLoop(set_as_default=True)
+dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 global mainloop
 
@@ -74,6 +73,7 @@ class BTHIDService:
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
+        dbus.mainloop.glib.threads_init()
         print("Setting up service")
         #create joystick class
         self.joystick = Joystick(self)
@@ -106,6 +106,11 @@ class BTHIDService:
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered")
+
+        self.btkservice = self.bus.get_object(self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
+        self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
+
+        print("Profile ")
 
         mainloop.run()
 
