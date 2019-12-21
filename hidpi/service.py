@@ -138,4 +138,4 @@ class BTHIDService:
                 if object_path == '/':
                     object_path = ''
                 new_path = '/'.join((object_path, child.attrib['name']))
-                rec_intro(bus, service, new_path)
+                self.rec_intro(bus, service, new_path)
