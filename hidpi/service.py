@@ -81,6 +81,7 @@ class BTHIDService:
         #create joystick class
         self.joystick = Joystick(self)
 
+        self.listen()
         mainloop = glib.MainLoop()
         print("Configuring Bluez Profile")
 
@@ -114,8 +115,6 @@ class BTHIDService:
         # self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
 
         print("Profile ")
-
-        self.listen()
 
         mainloop.run()
 
