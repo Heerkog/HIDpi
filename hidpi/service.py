@@ -8,6 +8,7 @@ from hidpi.hid import Joystick
 import socket
 
 DBusGMainLoop(set_as_default=True)
+
 global mainloop
 
 #define a bluez 5 profile object for our keyboard
