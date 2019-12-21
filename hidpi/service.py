@@ -19,7 +19,7 @@ class BluezProfile(dbus.service.Object):
     interrupt_channel = None
 
     def __init__(self, bus, path):
-        super().__init__(self, bus, path)
+        super().__init__(bus, path)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
