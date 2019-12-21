@@ -67,7 +67,7 @@ class BluezProfile(dbus.service.Object):
 class BTHIDService:
     MY_ADDRESS = "B8:27:EB:77:31:44"
     MY_DEV_NAME = "RPi_HID_Joystick"
-    control_port = 10  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
+    control_port = 12  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     interrupt_port = 15  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
     PROFILE_DBUS_NAME = "nl.rug.ds.heerkog.hid"  #dbus mame of the bluez profile
