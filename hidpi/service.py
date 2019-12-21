@@ -110,8 +110,8 @@ class BTHIDService:
 
         print("Profile registered")
 
-        self.btkservice = system_bus.get_object(self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
-        self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
+        # self.btkservice = system_bus.get_object(self.PROFILE_DBUS_NAME, self.PROFILE_DBUS_PATH)
+        # self.iface = dbus.Interface(self.btkservice, self.PROFILE_DBUS_NAME)
 
         print("Profile ")
 
