@@ -106,7 +106,7 @@ class BTHIDService:
 
         print("Profile registered")
 
-        self.rec_intro(system_bus, "org.bluez", self.PROFILE_DBUS_PATH)
+        self.rec_intro(system_bus, "org.bluez", "/org/bluez")
 
         mainloop.run()
 
