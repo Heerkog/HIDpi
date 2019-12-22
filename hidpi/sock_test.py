@@ -4,9 +4,13 @@ from gi.repository import GLib as glib
 import time
 import socket
 
-def accept_control(self, source, cond):
-    control_channel, cinfo = self.control_socket.accept()
+global control_socket
+
+def accept_control(source, cond):
+    control_channel, cinfo = control_socket.accept()
     print("Got a connection on the control channel from " + cinfo[0])
+    control_channel.close()
+    control_socket.close()
     return True
 
 if __name__ == '__main__':
