@@ -14,7 +14,7 @@ if __name__ == '__main__':
         sys.exit("Only root can run this script")
 
     MY_ADDRESS = "b8:27:eb:77:31:44"
-    control_port = 12  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
+    control_port = 19  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
 
     print("Setting up connections")
 
