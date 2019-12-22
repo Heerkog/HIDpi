@@ -65,7 +65,7 @@ class BluezProfile(dbus.service.Object):
 
 #create a bluetooth device to emulate a HID joystick
 class BTHIDService:
-    MY_ADDRESS = "B8:27:EB:77:31:44"
+    MY_ADDRESS = "b8:27:eb:77:31:44"
     MY_DEV_NAME = "RPi_HID_Joystick"
     control_port = 12  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     interrupt_port = 15  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
@@ -124,16 +124,16 @@ class BTHIDService:
         self.control_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
         self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
 
+        #bind these sockets to a port
+        self.control_socket.bind((self.MY_ADDRESS, self.control_port))
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
+
         #Set sockets to non-blocking
         self.control_socket.setblocking(0)
         self.interrupt_socket.setblocking(0)
 
         self.control_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.interrupt_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-        #bind these sockets to a port
-        self.control_socket.bind((self.MY_ADDRESS, self.control_port))
-        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_port))
 
         #Start listening on the server sockets with limit of 1 connection
         self.control_socket.listen(1)
