@@ -1,12 +1,16 @@
+from __future__ import absolute_import, print_function
+
 import os
 import sys
+import socket
+
 import dbus
 import dbus.service
 import dbus.mainloop.glib
-from gi.repository import GLib as glib
-from gi.repository import Gtk as gtk
+
+
+import gtk
 from dbus.mainloop.glib import DBusGMainLoop
-import socket
 
 
 #define a bluez 5 profile object for our keyboard
@@ -71,7 +75,6 @@ class BTHIDService:
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
-        DBusGMainLoop(set_as_default=True)
         print("Setting up service")
         #create joystick class
         #self.joystick = Joystick(self)
@@ -105,8 +108,6 @@ class BTHIDService:
 
         print("Profile registered")
 
-        gtk.main()
-
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
         print("Reading service record: " + self.SDP_RECORD_PATH)
@@ -129,4 +130,6 @@ if __name__ == '__main__':
     if not os.geteuid() == 0:
         sys.exit("Only root can run this script")
 
+    DBusGMainLoop(set_as_default=True)
     myservice = BTHIDService()
+    gtk.main()
