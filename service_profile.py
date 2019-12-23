@@ -8,9 +8,9 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-from gi.repository import GObject as glib
+from gi.repository import GLib as glib
+from gi.repository import Gtk as gtk
 
-import gtk
 from dbus.mainloop.glib import DBusGMainLoop
 
 
