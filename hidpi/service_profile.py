@@ -69,7 +69,7 @@ class BTHIDService:
     CONTROL_PORT = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     INTERRUPT_PORT = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
-    SDP_RECORD_PATH = sys.path[0] + "/sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
+    SDP_RECORD_PATH = sys.path[0] + "/../sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self):
