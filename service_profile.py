@@ -8,8 +8,6 @@ import gtk
 from dbus.mainloop.glib import DBusGMainLoop
 import socket
 
-from hid import Joystick
-
 
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
@@ -76,7 +74,7 @@ class BTHIDService:
         DBusGMainLoop(set_as_default=True)
         print("Setting up service")
         #create joystick class
-        self.joystick = Joystick(self)
+        #self.joystick = Joystick(self)
 
         mainloop = glib.MainLoop()
         print("Configuring Bluez Profile")
