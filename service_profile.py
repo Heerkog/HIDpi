@@ -92,7 +92,8 @@ class BTHIDService:
             "Role": "server",
             "AutoConnect": True,
             "RequireAuthentication": False,
-            "RequireAuthorization": False
+            "RequireAuthorization": False,
+            "PSM": 17
         }
 
         #retrieve a proxy for the bluez profile interface
