@@ -89,11 +89,13 @@ class BTHIDService:
 
         opts = {
             "ServiceRecord": service_record,
+            "Name": self.MY_DEV_NAME,
             "Role": "server",
+            "Channel": dbus.UInt16(17),
+            "PSM": dbus.UInt16(19),
             "AutoConnect": True,
             "RequireAuthentication": False,
-            "RequireAuthorization": False,
-            "PSM": 17
+            "RequireAuthorization": False
         }
 
         #retrieve a proxy for the bluez profile interface
