@@ -8,6 +8,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
+from gi.repository import GObject as glib
 
 import gtk
 from dbus.mainloop.glib import DBusGMainLoop
