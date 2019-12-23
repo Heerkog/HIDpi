@@ -8,7 +8,7 @@ import gtk
 from dbus.mainloop.glib import DBusGMainLoop
 import socket
 
-from hidpi.hid import Joystick
+from hid import Joystick
 
 
 #define a bluez 5 profile object for our keyboard
