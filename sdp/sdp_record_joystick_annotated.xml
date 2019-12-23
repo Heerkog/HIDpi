@@ -23,6 +23,12 @@
 			</sequence>
 		</sequence>
 	</attribute>
+	<!-- Browse Group List -->
+	<attribute id="0x0005">
+		<sequence>
+			<uuid value="0x1002" />
+		</sequence>
+	</attribute>
 	<!-- Language Base Attribute ID List -->
 	<attribute id="0x0006">
 		<sequence>

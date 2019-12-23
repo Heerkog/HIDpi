@@ -17,6 +17,11 @@
 			</sequence>
 		</sequence>
 	</attribute>
+	<attribute id="0x0005">
+		<sequence>
+			<uuid value="0x1002" />
+		</sequence>
+	</attribute>
 	<attribute id="0x0006">
 		<sequence>
 			<uint16 value="0x656e" />
