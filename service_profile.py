@@ -9,10 +9,11 @@ import dbus.service
 import dbus.mainloop.glib
 
 from gi.repository import GLib as glib
-from gi.repository import Gtk as gtk
 
 from dbus.mainloop.glib import DBusGMainLoop
 
+
+global mainloop
 
 #define a bluez 5 profile object for our keyboard
 class BluezProfile(dbus.service.Object):
@@ -25,7 +26,7 @@ class BluezProfile(dbus.service.Object):
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
         print("Release")
-        exit()
+        mainloop.exit()
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Cancel(self):
@@ -131,6 +132,7 @@ if __name__ == '__main__':
     if not os.geteuid() == 0:
         sys.exit("Only root can run this script")
 
+    mainloop = glib.MainLoop()
     DBusGMainLoop(set_as_default=True)
     myservice = BTHIDService()
-    gtk.main()
+    mainloop.run()
