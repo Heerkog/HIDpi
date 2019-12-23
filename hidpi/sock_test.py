@@ -1,7 +1,7 @@
 import os
 import sys
 from gi.repository import GLib as glib
-import time
+from signal import pause
 import socket
 
 global control_socket
@@ -32,4 +32,4 @@ if __name__ == '__main__':
     glib.io_add_watch(control_socket.fileno(), glib.IO_IN, accept_control)
     print("Watching sockets")
 
-    time.pause()
+    pause()
