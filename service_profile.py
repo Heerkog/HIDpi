@@ -4,6 +4,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib as glib
+from gi.repository import GObject
 import gtk
 from dbus.mainloop.glib import DBusGMainLoop
 import socket
