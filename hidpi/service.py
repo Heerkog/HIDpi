@@ -95,7 +95,7 @@ class BluezHIDProfile(dbus.service.Object):
 
     def callback(self, source, conditions, channel):
         try:
-            data = channel.recv(1024)
+            data = channel.recv(1)
             print("{0}".format(data))
         except:
             print("No data")
