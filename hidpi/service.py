@@ -82,8 +82,9 @@ class BluezHIDProfile(dbus.service.Object):
         return True
 
     def accept_interrupt(self, source, cond):
+        print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.callback, self.interrupt_channel)
+        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.callback, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return True
 
