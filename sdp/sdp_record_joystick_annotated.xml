@@ -100,7 +100,7 @@
 	</attribute>
 	<!-- HID Virtual Cable -->
 	<attribute id="0x0204">
-		<boolean value="false" />
+		<boolean value="true" />
 	</attribute>
 	<!-- HID Reconnect Initiate -->
 	<attribute id="0x0205">
