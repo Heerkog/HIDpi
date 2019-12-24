@@ -77,13 +77,13 @@ class BluezHIDProfile(dbus.service.Object):
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = source.accept()
-        gobject.io_add_watch(self.control_channel, gobject.IO_IN, self.control_callback)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN, self.control_callback)
         print("Got a connection on the control channel from " + cinfo[0])
         return True
 
     def accept_interrupt(self, source, cond):
         self.interrupt_channel, cinfo = source.accept()
-        gobject.io_add_watch(self.interrupt_channel, gobject.IO_IN, self.control_callback)
+        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.control_callback)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return True
 
