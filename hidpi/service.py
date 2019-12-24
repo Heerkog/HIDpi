@@ -10,6 +10,8 @@ import dbus.mainloop.glib
 
 from gi.repository import GObject as gobject
 
+import hidpi.hid
+
 global mainloop
 
 #define a bluez 5 profile object for our keyboard
@@ -147,7 +149,7 @@ class BTHIDService:
         print("Profile registered")
 
         #create joystick class
-        self.joystick = Joystick(self.profile)
+        self.joystick = hidpi.hid.Joystick(self.profile)
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
