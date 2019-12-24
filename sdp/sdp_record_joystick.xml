@@ -29,6 +29,14 @@
 			<uint16 value="0x0100" />
 		</sequence>
 	</attribute>
+	<attribute id="0x0009">
+		<sequence>
+			<sequence>
+				<uuid value="0x1124" />
+				<uint16 value="0x0100" />
+			</sequence>
+		</sequence>
+	</attribute>
 	<attribute id="0x000d">
 		<sequence>
 			<sequence>
@@ -42,14 +50,6 @@
 			</sequence>
 		</sequence>
 	</attribute>
-	<attribute id="0x0009">
-		<sequence>
-			<sequence>
-				<uuid value="0x1124" />
-				<uint16 value="0x0100" />
-			</sequence>
-		</sequence>
-	</attribute>
 	<attribute id="0x0100">
 		<text value="Raspberry Pi HID Joystick" />
 	</attribute>
@@ -58,6 +58,9 @@
 	</attribute>
 	<attribute id="0x0102">
 		<text value="Homegrown Electronics" />
+	</attribute>
+	<attribute id="0x0200">
+		<uint16 value="0x0100" />
 	</attribute>
 	<attribute id="0x0201">
 		<uint16 value="0x0111" />
@@ -95,5 +98,11 @@
 	</attribute>
 	<attribute id="0x020e">
 		<boolean value="false" />
+	</attribute>
+	<attribute id="0x020f">
+		<uint16 value="0x0640" />
+	</attribute>
+	<attribute id="0x0210">
+		<uint16 value="0x0320" />
 	</attribute>
 </record>
