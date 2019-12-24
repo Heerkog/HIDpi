@@ -40,8 +40,8 @@ class BluezHIDProfile(dbus.service.Object):
         self.control_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
         self.interrupt_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
-        self.control_socket.bind((self.MY_ADDRESS, self.control_port))
-        self.interrupt_socket.bind((self.MY_ADDRESS, self.interrupt_socket))
+        self.control_socket.bind((self.MY_ADDRESS, self.CONTROL_PORT))
+        self.interrupt_socket.bind((self.MY_ADDRESS, self.INTERRUPT_PORT))
 
         self.control_socket.listen(1)
         self.interrupt_socket.listen(1)
