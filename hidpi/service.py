@@ -33,8 +33,8 @@ class BluezHIDProfile(dbus.service.Object):
         self.control_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
         self.interrupt_socket = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_L2CAP)
 
-        self.control_socket.setblocking(0)
-        self.interrupt_socket.setblocking(0)
+        # self.control_socket.setblocking(0)
+        # self.interrupt_socket.setblocking(0)
 
         self.control_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.interrupt_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
