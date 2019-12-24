@@ -51,8 +51,8 @@ class BluezHIDProfile(dbus.service.Object):
         # self.control_channel, cinfo = self.control_socket.accept()
         # self.interrupt_channel, cinfo = self.interrupt_socket.accept()
 
-        gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN, self.accept_control)
-        gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN, self.accept_interrupt)
+        gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_control)
+        gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_interrupt)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -81,6 +81,7 @@ class BluezHIDProfile(dbus.service.Object):
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
         gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN, self.callback, self.control_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
         print("Got a connection on the control channel from " + cinfo[0])
         return True
 
@@ -88,13 +89,24 @@ class BluezHIDProfile(dbus.service.Object):
         print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.callback, self.interrupt_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return True
 
     def callback(self, source, conditions, channel):
-        data = channel.recv(1024)
-        print("{0}".format(data))
+        try:
+            data = channel.recv(1024)
+            print("{0}".format(data))
+        except:
+            print("No data")
         return True
+
+    def close(self, source, condition, channel):
+        print("Channel error {0}".format(channel.getsockname()))
+        try:
+            channel.close()
+        except:
+            print("Close failed")
 
     def send_input_report(self, report):
         try:
