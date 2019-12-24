@@ -133,10 +133,10 @@ class BTHIDService:
         adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
         adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
 
-        adapter_properties.Set('org.bluez.Adapter1', 'PairableTimeout', dbus.UInt16(0))
+        adapter_properties.Set('org.bluez.Adapter1', 'PairableTimeout', dbus.UInt32(0))
         adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
 
-        adapter_properties.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt16(0))
+        adapter_properties.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(0))
         adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
         self.profile = BluezHIDProfile(system_bus, self.PROFILE_DBUS_PATH)
