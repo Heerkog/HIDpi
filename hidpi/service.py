@@ -48,11 +48,11 @@ class BluezHIDProfile(dbus.service.Object):
         self.control_socket.listen(1)
         self.interrupt_socket.listen(1)
 
-        self.control_channel, cinfo = self.control_socket.accept()
-        self.interrupt_channel, cinfo = self.interrupt_socket.accept()
+        # self.control_channel, cinfo = self.control_socket.accept()
+        # self.interrupt_channel, cinfo = self.interrupt_socket.accept()
 
-        # gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN, self.accept_control)
-        # gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN, self.accept_interrupt)
+        gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN, self.accept_control)
+        gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN, self.accept_interrupt)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -80,14 +80,14 @@ class BluezHIDProfile(dbus.service.Object):
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
-        # gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN, self.callback, self.control_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN, self.callback, self.control_channel)
         print("Got a connection on the control channel from " + cinfo[0])
         return True
 
     def accept_interrupt(self, source, cond):
         print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.callback, self.interrupt_channel)
+        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN, self.callback, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return True
 
