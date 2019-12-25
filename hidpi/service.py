@@ -129,7 +129,7 @@ class BluezHIDProfile(dbus.service.Object):
 class BTHIDService:
     MY_DEV_NAME = "RPi_HID_Joystick"
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
-    SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
+    SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record.xml"  #_joystick.xml"  #file path of the sdp record to laod
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self, loop):
@@ -169,6 +169,8 @@ class BTHIDService:
 
         #create joystick class
         self.joystick = hidpi.hid.Joystick(self.profile)
+
+        print("Listenin")
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
