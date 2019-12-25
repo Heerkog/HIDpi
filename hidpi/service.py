@@ -113,6 +113,7 @@ class BluezHIDProfile(dbus.service.Object):
 
     def send_input_report(self, report):
         try:
+            print("Sending input {0}".format(report))
             message = bytearray()
             message.append(chr(report[0]))
             message.append(chr(report[1]))
@@ -123,6 +124,7 @@ class BluezHIDProfile(dbus.service.Object):
             print("Sending {0}".format(message))
             self.interrupt_channel.send(message)
         except:
+            print("Exception")
             self.file_descriptor = -1
 
 #create a bluetooth service to emulate a HID joystick
