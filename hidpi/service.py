@@ -51,8 +51,6 @@ class BluezHIDProfile(dbus.service.Object):
         # self.control_channel, cinfo = self.control_socket.accept()
         # self.interrupt_channel, cinfo = self.interrupt_socket.accept()
 
-        print("Accepting control connections on {0}".format(self.control_socket.getsockname()))
-
         gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_control)
         print("Accepting control connections on {0}".format(self.control_socket.getsockname()))
 
@@ -85,16 +83,16 @@ class BluezHIDProfile(dbus.service.Object):
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
-        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
-        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
+        # gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
+        # gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
         print("Got a connection on the control channel from " + cinfo[0])
         return False
 
     def accept_interrupt(self, source, cond):
         print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
-        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
+        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
+        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return False
 
@@ -107,8 +105,8 @@ class BluezHIDProfile(dbus.service.Object):
         return True
 
     def close(self, source, condition, channel):
-        print("Channel error {0}".format(channel.getsockname()))
         try:
+            print("Channel closed for {0}".format(channel.getsockname()))
             channel.close()
         except:
             print("Close failed")
