@@ -4,7 +4,7 @@ from gpiozero import Button
 #Class that represents the Joystick state
 class Joystick:
 
-    def __init__(self, profile):
+    def __init__(self):
         #Define the Joystick state
         self.state = [
             0xA1,  #this is an input report
@@ -12,8 +12,6 @@ class Joystick:
             0x00,  #X-axis between -127 and 127
             0x00,  #Y-axis between -127 and 127
             0x00]  #unsigned char representing 3 buttons, rest empty
-
-        self.profile = profile
 
         #Set up GPIO input
         self.up_button = Button("GPIO17")     #Up signal
@@ -33,11 +31,9 @@ class Joystick:
 
     def x_axis_event(self):
         self.state[2] = hex((self.up_button.is_pressed - self.down_button.is_pressed) * 127)
-        self.profile.send_input_report(self.state)
 
     def y_axis_event(self):
         self.state[3] = hex((self.right_button.is_pressed - self.left_button.is_pressed) * 127)
-        self.profile.send_input_report(self.state)
 
     def set_button1_down(self):
         self.state[4] = self.state[4] + 0x80;
@@ -56,3 +52,6 @@ class Joystick:
 
     def set_button3_up(self):
         self.state[4] = self.state[4] - 0x20;
+
+    def get_state(self):
+        return self.state

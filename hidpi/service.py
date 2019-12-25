@@ -48,14 +48,8 @@ class BluezHIDProfile(dbus.service.Object):
         self.control_socket.listen(1)
         self.interrupt_socket.listen(1)
 
-        # self.control_channel, cinfo = self.control_socket.accept()
-        # self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-
-        gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_control)
-        print("Accepting control connections on {0}".format(self.control_socket.getsockname()))
-
-        gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_interrupt)
-        print("Accepting interrupt connections on {0}".format(self.interrupt_socket.getsockname()))
+        self.listen(self.control_socket, self.accept_control)
+        self.listen(self.interrupt_socket, self.accept_interrupt)
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
@@ -80,10 +74,13 @@ class BluezHIDProfile(dbus.service.Object):
             os.close(self.file_descriptor)
             self.file_descriptor = -1
 
+    def listen(self, socket, func):
+        gobject.io_add_watch(socket.fileno(), gobject.IO_IN | gobject.IO_PRI, func)
+        print("Accepting connections on {0}".format(socket.getsockname()))
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
-        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close_control)
         gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
         print("Got a connection on the control channel from " + cinfo[0])
         return False
@@ -91,7 +88,7 @@ class BluezHIDProfile(dbus.service.Object):
     def accept_interrupt(self, source, cond):
         print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
+        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close_interrupt)
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return False
@@ -99,33 +96,49 @@ class BluezHIDProfile(dbus.service.Object):
     def callback(self, source, conditions, channel):
         try:
             data = channel.recv(1)
-            print("{0}".format(data))
+            print("Received {0}".format(data) + " on {0}".format(channel.getsockname()))
         except:
             print("No data")
         return True
 
-    def close(self, source, condition, channel):
+    def close_control(self, source, condition):
         try:
-            print("Channel closed for {0}".format(channel.getsockname()))
-            channel.close()
+            print("Closing channel {0}".format(self.control_channel.getsockname()))
+            self.control_channel.close()
+            self.control_channel = None
+
+            self.listen(self.control_socket, self.accept_control)
         except:
             print("Close failed")
+        return False
+
+    def close_interrupt(self, source, condition):
+        try:
+            print("Closing channel {0}".format(self.interrupt_channel.getsockname()))
+            self.interrupt_channel.close()
+            self.interrupt_channel = None
+
+            self.listen(self.interrupt_socket, self.accept_interrupt)
+        except:
+            print("Close failed")
+        return False
 
     def send_input_report(self, report):
         try:
-            print("Sending input {0}".format(report))
-            message = bytearray()
-            message.append(chr(report[0]))
-            message.append(chr(report[1]))
-            message.append(chr(report[2]))
-            message.append(chr(report[3]))
-            message.append(chr(report[4]))
+            if self.interrupt_channel is not None:
+                print("Sending input {0}".format(report))
+                message = bytearray()
+                message.append(chr(report[0]))
+                message.append(chr(report[1]))
+                message.append(chr(report[2]))
+                message.append(chr(report[3]))
+                message.append(chr(report[4]))
 
-            print("Sending {0}".format(message))
-            self.interrupt_channel.send(message)
+                self.interrupt_channel.send(message)
+                print("Sending {0}".format(message))
         except:
             print("Exception")
-            self.file_descriptor = -1
+        return True
 
 #create a bluetooth service to emulate a HID joystick
 class BTHIDService:
@@ -170,7 +183,8 @@ class BTHIDService:
         print("Profile registered")
 
         #create joystick class
-        self.joystick = hidpi.hid.Joystick(self.profile)
+        self.joystick = hidpi.hid.Joystick()
+        gobject.timeout_add(100, self.profile, self.joystick.get_state())
 
         print("Device added")
 
