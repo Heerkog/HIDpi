@@ -4,7 +4,7 @@ from gpiozero import Button
 #Class that represents the Joystick state
 class Joystick:
 
-    def __init__(self):
+    def __init__(self, report_function):
         #Define the Joystick state
         self.state = [
             0xA1,  #this is an input report
@@ -12,6 +12,7 @@ class Joystick:
             0x00,  #X-axis between -127 and 127
             0x00,  #Y-axis between -127 and 127
             0x00]  #unsigned char representing 3 buttons, rest empty
+        self.report_function = report_function
 
         #Set up GPIO input
         self.up_button = Button("GPIO17")     #Up signal
@@ -31,27 +32,45 @@ class Joystick:
 
     def x_axis_event(self):
         self.state[2] = hex((self.up_button.is_pressed - self.down_button.is_pressed) * 127)
+        self.send_report()
 
     def y_axis_event(self):
         self.state[3] = hex((self.right_button.is_pressed - self.left_button.is_pressed) * 127)
+        self.send_report()
 
     def set_button1_down(self):
         self.state[4] = self.state[4] + 0x80;
+        self.send_report()
 
     def set_button1_up(self):
         self.state[4] = self.state[4] - 0x80;
+        self.send_report()
 
     def set_button2_down(self):
         self.state[4] = self.state[4] + 0x40;
+        self.send_report()
 
     def set_button2_up(self):
         self.state[4] = self.state[4] - 0x40;
+        self.send_report()
 
     def set_button3_down(self):
         self.state[4] = self.state[4] + 0x20;
+        self.send_report()
 
     def set_button3_up(self):
         self.state[4] = self.state[4] - 0x20;
+        self.send_report()
 
     def get_state(self):
         return self.state
+
+    def send_report(self):
+        report = ""
+        report+=chr(self.state[0])
+        report+=chr(self.state[1])
+        report+=chr(self.state[2])
+        report+=chr(self.state[3])
+        report+=chr(self.state[4])
+
+        self.report_function(report)

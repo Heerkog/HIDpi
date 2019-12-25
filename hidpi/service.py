@@ -91,12 +91,13 @@ class BluezHIDProfile(dbus.service.Object):
         return False
 
     def callback(self, source, conditions, channel):
+        ret = True
         try:
-            data = channel.recv(1)
+            data = channel.recv(1024)
             print("Received {0}".format(data) + " on {0}".format(channel.getsockname()))
         except:
-            print("No data")
-        return True
+            ret = False
+        return ret
 
     def close_control(self, source, condition):
         try:
@@ -120,18 +121,11 @@ class BluezHIDProfile(dbus.service.Object):
             print("Close failed")
         return False
 
-    def send_input_report(self, report):
+    def send_input_report(self, device_state):
         try:
             if self.interrupt_channel is not None:
-                message = bytearray()
-                message.append(chr(report[0]))
-                message.append(chr(report[1]))
-                message.append(chr(report[2]))
-                message.append(chr(report[3]))
-                message.append(chr(report[4]))
-
-                self.interrupt_channel.send(message)
-                print("Sending {0}".format(report))
+                self.interrupt_channel.send(device_state)
+                print("Sending {0}".format(device_state))
         except:
             print("Exception")
         return True
@@ -179,10 +173,11 @@ class BTHIDService:
         print("Profile registered")
 
         #create joystick class
-        self.joystick = hidpi.hid.Joystick()
-        gobject.timeout_add(100, self.profile.send_input_report, self.joystick.get_state())
+        self.joystick = hidpi.hid.Joystick(self.profile.send_input_report)
 
         print("Device added")
+
+        gobject.timeout_add_seconds(2, self.joystick.send_report())
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
