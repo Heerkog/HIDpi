@@ -83,16 +83,16 @@ class BluezHIDProfile(dbus.service.Object):
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
-        # gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
-        # gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.control_channel)
+        gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
         print("Got a connection on the control channel from " + cinfo[0])
         return False
 
     def accept_interrupt(self, source, cond):
         print("Accept interrupt")
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
-        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
-        # gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
+        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close, self.interrupt_channel)
+        gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
         print("Got a connection on the interrupt channel from " + cinfo[0])
         return False
 
@@ -129,7 +129,7 @@ class BluezHIDProfile(dbus.service.Object):
 class BTHIDService:
     MY_DEV_NAME = "RPi_HID_Joystick"
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
-    SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record.xml"  #_joystick.xml"  #file path of the sdp record to laod
+    SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self, loop):
@@ -170,7 +170,7 @@ class BTHIDService:
         #create joystick class
         self.joystick = hidpi.hid.Joystick(self.profile)
 
-        print("Listenin")
+        print("Device added")
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
