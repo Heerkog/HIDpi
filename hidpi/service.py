@@ -184,7 +184,7 @@ class BTHIDService:
 
         #create joystick class
         self.joystick = hidpi.hid.Joystick()
-        gobject.timeout_add(100, self.profile, self.joystick.get_state())
+        gobject.timeout_add(100, self.profile.send_input_report, self.joystick.get_state())
 
         print("Device added")
 
