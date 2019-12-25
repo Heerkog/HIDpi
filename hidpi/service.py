@@ -51,8 +51,13 @@ class BluezHIDProfile(dbus.service.Object):
         # self.control_channel, cinfo = self.control_socket.accept()
         # self.interrupt_channel, cinfo = self.interrupt_socket.accept()
 
+        print("Accepting control connections on {0}".format(self.control_socket.getsockname()))
+
         gobject.io_add_watch(self.control_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_control)
+        print("Accepting control connections on {0}".format(self.control_socket.getsockname()))
+
         gobject.io_add_watch(self.interrupt_socket.fileno(), gobject.IO_IN | gobject.IO_PRI, self.accept_interrupt)
+        print("Accepting interrupt connections on {0}".format(self.interrupt_socket.getsockname()))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
