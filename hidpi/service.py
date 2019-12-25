@@ -74,6 +74,7 @@ class BluezHIDProfile(dbus.service.Object):
     def listen(self, socket, func):
         gobject.io_add_watch(socket.fileno(), gobject.IO_IN | gobject.IO_PRI, func)
         print("Accepting connections on {0}".format(socket.getsockname()))
+        return False
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
