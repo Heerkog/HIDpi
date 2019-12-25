@@ -69,7 +69,7 @@
 		<uint8 value="0x04" />
 	</attribute>
 	<attribute id="0x0203">
-		<uint8 value="0x0D" />
+		<uint8 value="0x00" />
 	</attribute>
 	<attribute id="0x0204">
 		<boolean value="false" />
