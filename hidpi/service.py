@@ -131,7 +131,7 @@ class BluezHIDProfile(dbus.service.Object):
                 message.append(chr(report[4]))
 
                 self.interrupt_channel.send(message)
-                print("Sending {0}".format(message))
+                print("Sending {0}".format(report))
         except:
             print("Exception")
         return True
