@@ -31,11 +31,11 @@ class Joystick:
         self.right_button.when_released = self.y_axis_event
 
     def x_axis_event(self):
-        self.state[2] = (self.up_button.is_pressed - self.down_button.is_pressed) * 127
+        self.state[2] = (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127
         self.send_report()
 
     def y_axis_event(self):
-        self.state[3] = (self.right_button.is_pressed - self.left_button.is_pressed) * 127
+        self.state[3] = (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127
         self.send_report()
 
     def set_button1_down(self):
