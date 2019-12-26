@@ -92,17 +92,17 @@ class BluezHIDProfile(dbus.service.Object):
         return False
 
     def callback(self, source, conditions, channel):
-        ret = True
         try:
             data = channel.recv(1024)
             print("Received {0}".format(data) + " on {0}".format(channel.getsockname()))
         except:
-            ret = False
-        return ret
+            print("Error while attempting to receive data from {0}".format(channel.getsockname()))
+        return True
 
     def close_control(self, source, condition):
         try:
             print("Closing channel {0}".format(self.control_channel.getsockname()))
+            gobject.source_remove(source)
             self.control_channel.close()
             self.control_channel = None
 
@@ -114,6 +114,7 @@ class BluezHIDProfile(dbus.service.Object):
     def close_interrupt(self, source, condition):
         try:
             print("Closing channel {0}".format(self.interrupt_channel.getsockname()))
+            gobject.source_remove(source)
             self.interrupt_channel.close()
             self.interrupt_channel = None
 
