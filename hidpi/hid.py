@@ -66,6 +66,7 @@ class Joystick:
         return self.state
 
     def send_report(self):
+        print(self.state[0])
         report = ""
         report+=self.state[0]
         report+=self.state[1]
