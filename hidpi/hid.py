@@ -66,7 +66,7 @@ class Joystick:
         return self.state
 
     def send_report(self):
-        print("Sending x:" + self.state[2] + " y:" + self.state[3] + " b:" + self.state[4])
+        print("Sending x: {0} y: {1} b: {2}".format(self.state[2], self.state[3], self.state[4]))
         report = ""
         report += chr(self.state[0])
         report += chr(self.state[1])
