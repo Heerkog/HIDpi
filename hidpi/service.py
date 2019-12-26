@@ -95,9 +95,9 @@ class BluezHIDProfile(dbus.service.Object):
     def callback(self, source, conditions, channel):
         try:
             data = channel.recv(1024)
-            print("Received {0}".format(data) + " on {0}".format(channel.getsockname()))
+            print("Received {0}".format(data))
         except:
-            print("Error while attempting to receive message from {0}.".format(channel.getsockname()))
+            print("Error while attempting to receive message.")
         return True
 
     def close_control(self, source, condition):
@@ -127,8 +127,9 @@ class BluezHIDProfile(dbus.service.Object):
     def send_input_report(self, device_state):
         try:
             if self.interrupt_channel is not None:
-                self.interrupt_channel.send(device_state)
-                print("Sending {0}.".format(device_state))
+                for byte_value in device_state:
+                    self.interrupt_channel.send(byte_value)
+                    print("Sending {0}.".format(device_state))
         except:
             print("Error while attempting to send report.")
         return True
