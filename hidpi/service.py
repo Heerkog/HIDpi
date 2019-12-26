@@ -127,9 +127,8 @@ class BluezHIDProfile(dbus.service.Object):
     def send_input_report(self, device_state):
         try:
             if self.interrupt_channel is not None:
-                for byte_value in device_state:
-                    self.interrupt_channel.send(byte_value)
-                    print("Sending {0}.".format(device_state))
+                self.interrupt_channel.send(device_state)
+                print("Sending {0}.".format(device_state))
         except:
             print("Error while attempting to send report.")
         return True
