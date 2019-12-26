@@ -67,11 +67,11 @@ class Joystick:
 
     def send_report(self):
         report = ""
-        report+=chr(int(self.state[0], 0))
-        report+=chr(int(self.state[1], 0))
-        report+=chr(int(self.state[2], 0))
-        report+=chr(int(self.state[3], 0))
-        report+=chr(int(self.state[4], 0))
+        report+=chr(int(self.state[0], 16))
+        report+=chr(int(self.state[1], 16))
+        report+=chr(int(self.state[2], 16))
+        report+=chr(int(self.state[3], 16))
+        report+=chr(int(self.state[4], 16))
 
         self.report_function(report)
         return True
