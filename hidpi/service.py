@@ -142,15 +142,6 @@ class BTHIDService:
 
     def __init__(self, loop):
         mainloop = loop
-
-        print("Restarting Bluetooth service.")
-        os.system("service bluetooth stop &")
-        time.sleep(1)
-        os.system("/etc/init.d/bluetooth stop &")
-        time.sleep(2)
-        os.system("/usr/sbin/bluetoothd --compat &")
-        time.sleep(2)
-
         print("Configuring Bluez Profile.")
 
         #setup profile options
