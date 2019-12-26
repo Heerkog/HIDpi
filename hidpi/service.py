@@ -147,7 +147,7 @@ class BTHIDService:
         os.system("service bluetooth stop &")
         time.sleep(1)
         os.system("/etc/init.d/bluetooth stop &")
-        time.sleep(1)
+        time.sleep(2)
         os.system("/usr/sbin/bluetoothd --compat &")
         time.sleep(2)
 
