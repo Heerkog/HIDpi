@@ -3,6 +3,7 @@ from __future__ import absolute_import, print_function
 import os
 import sys
 import socket
+import time
 
 import dbus
 import dbus.service
@@ -61,11 +62,11 @@ class BluezHIDProfile(dbus.service.Object):
     def NewConnection(self, path, file_descriptor, properties):
         self.file_descriptor = file_descriptor.take()
 
-        print("NewConnection(%s, %d)" % (path, self.file_descriptor))
+        print("NewConnection(%s, %d)." % (path, self.file_descriptor))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
-        print("RequestDisconnection(%s)" % (path))
+        print("RequestDisconnection(%s)." % (path))
 
         if (self.file_descriptor > 0):
             os.close(self.file_descriptor)
@@ -73,14 +74,14 @@ class BluezHIDProfile(dbus.service.Object):
 
     def listen(self, socket, func):
         gobject.io_add_watch(socket.fileno(), gobject.IO_IN | gobject.IO_PRI, func)
-        print("Accepting connections on {0}".format(socket.getsockname()))
+        print("Accepting connections on {0}.".format(socket.getsockname()))
         return False
 
     def accept_control(self, source, cond):
         self.control_channel, cinfo = self.control_socket.accept()
         gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close_control)
         gobject.io_add_watch(self.control_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.control_channel)
-        print("Got a connection on the control channel from " + cinfo[0])
+        print("Got a connection on the control channel from {0}.".format(cinfo[0]))
         return False
 
     def accept_interrupt(self, source, cond):
@@ -88,7 +89,7 @@ class BluezHIDProfile(dbus.service.Object):
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close_interrupt)
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
-        print("Got a connection on the interrupt channel from " + cinfo[0])
+        print("Got a connection on the interrupt channel from {0}.".format(cinfo[0]))
         return False
 
     def callback(self, source, conditions, channel):
@@ -96,7 +97,7 @@ class BluezHIDProfile(dbus.service.Object):
             data = channel.recv(1024)
             print("Received {0}".format(data) + " on {0}".format(channel.getsockname()))
         except:
-            print("Error while attempting to receive data from {0}".format(channel.getsockname()))
+            print("Error while attempting to receive message from {0}.".format(channel.getsockname()))
         return True
 
     def close_control(self, source, condition):
@@ -127,9 +128,9 @@ class BluezHIDProfile(dbus.service.Object):
         try:
             if self.interrupt_channel is not None:
                 self.interrupt_channel.send(device_state)
-                print("Sending {0}".format(device_state))
+                print("Sending {0}.".format(device_state))
         except:
-            print("Exception")
+            print("Error while attempting to send report.")
         return True
 
 #create a bluetooth service to emulate a HID joystick
@@ -141,7 +142,16 @@ class BTHIDService:
 
     def __init__(self, loop):
         mainloop = loop
-        print("Configuring Bluez Profile")
+
+        print("Restarting Bluetooth service.")
+        os.system("service bluetooth stop")
+        time.sleep(1)
+        os.system("/etc/init.d/bluetooth stop")
+        time.sleep(1)
+        os.system("/usr/sbin/bluetoothd --compat")
+        time.sleep(2)
+
+        print("Configuring Bluez Profile.")
 
         #setup profile options
         service_record = self.read_sdp_service_record()
@@ -172,12 +182,12 @@ class BTHIDService:
         profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
         profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
-        print("Profile registered")
+        print("Profile registered.")
 
         #create joystick class
         self.joystick = hidpi.hid.Joystick(self.profile.send_input_report)
 
-        print("Device added")
+        print("Device added.")
 
         gobject.timeout_add_seconds(2, self.joystick.send_report())
 
