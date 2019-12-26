@@ -144,11 +144,11 @@ class BTHIDService:
         mainloop = loop
 
         print("Restarting Bluetooth service.")
-        os.system("service bluetooth stop")
+        os.system("service bluetooth stop &")
         time.sleep(1)
-        os.system("/etc/init.d/bluetooth stop")
+        os.system("/etc/init.d/bluetooth stop &")
         time.sleep(1)
-        os.system("/usr/sbin/bluetoothd --compat")
+        os.system("/usr/sbin/bluetoothd --compat &")
         time.sleep(2)
 
         print("Configuring Bluez Profile.")
