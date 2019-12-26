@@ -180,7 +180,7 @@ class BTHIDService:
 
         print("Device added.")
 
-        gobject.timeout_add_seconds(2, self.joystick.send_report())
+        gobject.timeout_add_seconds(2, self.joystick.send_report)
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
