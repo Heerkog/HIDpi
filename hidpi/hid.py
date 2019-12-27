@@ -14,7 +14,7 @@ class HumanInterfaceDevice(object):
         return self.state
 
     def send_report(self):
-        print("state: {0}".format(self.state))
+        print("state: " + self.state)
         self.report_function(self.state)
         return True
 
