@@ -26,7 +26,7 @@ class HumanInterfaceDevice:
 class Joystick(HumanInterfaceDevice):
 
     def __init__(self, report_function):
-        super().__init__(report_function)
+        super(Joystick).__init__(report_function)
 
         #Define the Joystick state
         self.state = [
