@@ -154,7 +154,7 @@ class BluezHIDProfile(dbus.service.Object):
         return True  # Return True to support adding a timeout function
 
 
-#create a bluetooth service to emulate a HID device
+# Create a Bluetooth service to emulate a HID device
 class BTHIDService:
     MY_DEV_NAME = "RPi_HID_Joystick"
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
