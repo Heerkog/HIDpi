@@ -14,7 +14,7 @@ class HumanInterfaceDevice(object):
         return self.state
 
     def send_report(self):
-        print("x: {0} y: {1} b: {2}".format(self.state[1], self.state[2], self.state[3]))
+        print("x: {0} y: {1} b: {2}".format(struct.unpack("b", self.state[1]), struct.unpack("b", self.state[2]), struct.unpack("B", self.state[3])))
         self.report_function(self.state)
         return True
 
