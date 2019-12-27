@@ -54,19 +54,11 @@ class Joystick(HumanInterfaceDevice):
         self.down_button.when_released = self.y_axis_event
 
     def x_axis_event(self):
-        x = (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127
-        # If x is negative, manually flag the sign bit to allow for conversion from int to char
-        if x < 0:
-            x = abs(x) + 128
-        self.state[1] = x
+        self.state[1] = (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127
         self.send_report()
 
     def y_axis_event(self):
-        y = (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127
-        # If y is negative, manually flag the sign bit to allow for conversion from int to char
-        if y < 0:
-            y = abs(y) + 128
-        self.state[2] = y
+        self.state[2] = (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127
         self.send_report()
 
     def set_button1_down(self):
