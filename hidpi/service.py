@@ -105,7 +105,6 @@ class BluezHIDProfile(dbus.service.Object):
         self.interrupt_channel, cinfo = self.interrupt_socket.accept()
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_ERR | gobject.IO_HUP, self.close_interrupt)
         gobject.io_add_watch(self.interrupt_channel.fileno(), gobject.IO_IN | gobject.IO_PRI, self.callback, self.interrupt_channel)
-        print("Got a connection on the interrupt channel from {0}.".format(cinfo[0]))
         return False
 
     # Receive messages from the HID host
