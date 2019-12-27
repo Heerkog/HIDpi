@@ -21,7 +21,6 @@ class BluezHIDProfile(dbus.service.Object):
     CONTROL_PORT = 17  #HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     INTERRUPT_PORT = 19  #HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
 
-    file_descriptor = -1
     control_socket = None
     interrupt_socket = None
 
@@ -51,8 +50,21 @@ class BluezHIDProfile(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Release(self):
+        gobject.source_remove(self.interrupt_socket.fileno())
+        gobject.source_remove(self.control_socket.fileno())
+
+        gobject.source_remove(self.interrupt_channel.fileno())
+        gobject.source_remove(self.control_channel.fileno())
+
+        self.interrupt_channel.close()
+        self.control_channel.close()
+
+        self.interrupt_socket.close()
+        self.control_socket.close()
+
         print("Release")
         mainloop.exit()
+        exit(0);
 
     @dbus.service.method("org.bluez.Profile1", in_signature="", out_signature="")
     def Cancel(self):
@@ -60,17 +72,11 @@ class BluezHIDProfile(dbus.service.Object):
 
     @dbus.service.method("org.bluez.Profile1", in_signature="oha{sv}", out_signature="")
     def NewConnection(self, path, file_descriptor, properties):
-        self.file_descriptor = file_descriptor.take()
-
         print("NewConnection(%s, %d)." % (path, self.file_descriptor))
 
     @dbus.service.method("org.bluez.Profile1", in_signature="o", out_signature="")
     def RequestDisconnection(self, path):
         print("RequestDisconnection(%s)." % (path))
-
-        if (self.file_descriptor > 0):
-            os.close(self.file_descriptor)
-            self.file_descriptor = -1
 
     def listen(self, socket, func):
         gobject.io_add_watch(socket.fileno(), gobject.IO_IN | gobject.IO_PRI, func)
