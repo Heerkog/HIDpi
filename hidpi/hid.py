@@ -15,13 +15,7 @@ class HumanInterfaceDevice(object):
 
     def send_report(self):
         print("x: {0} y: {1} b: {2}".format(self.state[1], self.state[2], self.state[3]))
-
-        bytes = bytearray()
-        for val in self.state:
-            bytes.append(struct.pack("b", val))
-
-        self.report_function(bytes)
-
+        self.report_function(self.state)
         return True
 
 
