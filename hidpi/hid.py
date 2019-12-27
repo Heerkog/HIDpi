@@ -64,7 +64,7 @@ class Joystick(HumanInterfaceDevice):
         self.send_report()
 
     def y_axis_event(self):
-        self.state[2] = struct.pack("b", (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127)
+        self.state[2] = struct.pack("b", (int(self.down_button.is_pressed) - int(self.up_button.is_pressed)) * 127)
         self.send_report()
 
     def button_event(self):

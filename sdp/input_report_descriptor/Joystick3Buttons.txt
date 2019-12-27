@@ -1,0 +1,26 @@
+USAGE_PAGE (Generic Desktop)	05 01
+USAGE (Joystick)	09 04
+COLLECTION (Application)	A1 01 
+  USAGE (Pointer)	09 01
+  COLLECTION (Physical)	A1 00 
+    USAGE_PAGE (Generic Desktop)	05 01
+    USAGE (X)	09 30
+    USAGE (Y)	09 31
+    LOGICAL_MINIMUM (-127)	15 81 
+    LOGICAL_MAXIMUM (127)	25 7F 
+    REPORT_SIZE (8)	75 08 
+    REPORT_COUNT (2)	95 02 
+    INPUT (Data,Var,Abs)	81 02 
+    USAGE_PAGE (Button)	05 09
+    USAGE_MINIMUM (Button 1)	19 01
+    USAGE_MAXIMUM (Button 3)	29 03
+    LOGICAL_MINIMUM (0)	15 00 
+    LOGICAL_MAXIMUM (1)	25 01 
+    REPORT_COUNT (3)	95 03 
+    REPORT_SIZE (1)	75 01 
+    INPUT (Data,Var,Abs)	81 02 
+    REPORT_COUNT (1)	95 01 
+    REPORT_SIZE (5)	75 05 
+    INPUT (Cnst,Var,Abs)	81 03 
+  END_COLLECTION	C0
+END_COLLECTION	C0

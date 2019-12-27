@@ -112,7 +112,9 @@
 			<sequence>
 				<!-- Report Type-->
 				<uint8 value="0x22" />
-				<!--
+				<!-- Created using the USB Descriptor Tool
+					See input_report_descriptor directory for files
+
 					0x05, 0x01,                    // USAGE_PAGE (Generic Desktop)
 					0x09, 0x04,                    // USAGE (Joystick)
 					0xa1, 0x01,                    // COLLECTION (Application)
