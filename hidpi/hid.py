@@ -37,6 +37,10 @@ class Joystick(HumanInterfaceDevice):
         self.left_button = Button("GPIO22")   #Left signal
         self.right_button = Button("GPIO23")  #Right signal
 
+        self.button_1 = Button("GPIO24")  #Button 1
+        self.button_2 = Button("GPIO25")  #Button 2
+        self.button_3 = Button("GPIO27")  #Button 3
+
         #Bind state update methods to events
         self.left_button.when_pressed = self.x_axis_event
         self.left_button.when_released = self.x_axis_event
@@ -47,6 +51,14 @@ class Joystick(HumanInterfaceDevice):
         self.down_button.when_pressed = self.y_axis_event
         self.down_button.when_released = self.y_axis_event
 
+        self.button_1.when_pressed = self.button_event
+        self.button_1.when_released = self.button_event
+        self.button_2.when_pressed = self.button_event
+        self.button_2.when_released = self.button_event
+        self.button_3.when_pressed = self.button_event
+        self.button_3.when_released = self.button_event
+
+
     def x_axis_event(self):
         self.state[1] = struct.pack("b", (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127)
         self.send_report()
@@ -55,32 +67,6 @@ class Joystick(HumanInterfaceDevice):
         self.state[2] = struct.pack("b", (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127)
         self.send_report()
 
-    def set_button1_down(self):
-        # Raise the first bit
-        self.state[3] = self.state[3] + 128;
-        self.send_report()
-
-    def set_button1_up(self):
-        # Lower the first bit
-        self.state[3] = self.state[3] - 128;
-        self.send_report()
-
-    def set_button2_down(self):
-        # Raise the second bit
-        self.state[3] = self.state[3] + 64;
-        self.send_report()
-
-    def set_button2_up(self):
-        # Lower the second bit
-        self.state[3] = self.state[3] - 64;
-        self.send_report()
-
-    def set_button3_down(self):
-        # Raise the third bit
-        self.state[3] = self.state[3] + 32;
-        self.send_report()
-
-    def set_button3_up(self):
-        # Lower the third bit
-        self.state[3] = self.state[3] - 32;
+    def button_event(self):
+        self.state[2] = struct.pack("B", 128 * int(self.button_1.is_pressed) + 64 * int(self.button_2.is_pressed) + 32 * int(self.button_3.is_pressed))
         self.send_report()

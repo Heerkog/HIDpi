@@ -134,7 +134,6 @@ class BluezHIDProfile(dbus.service.Object):
         try:
             if self.interrupt_channel is not None:
                 self.interrupt_channel.send(device_state)
-                # print("Sending {0}.".format(device_state))
         except:
             print("Error while attempting to send report.")
         return True
@@ -187,7 +186,7 @@ class BTHIDService:
 
         print("Device added.")
 
-        gobject.timeout_add_seconds(2, self.joystick.send_report)
+        # gobject.timeout_add_seconds(2, self.joystick.send_report)
 
     #read and return an sdp record from a file
     def read_sdp_service_record(self):
