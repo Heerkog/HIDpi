@@ -2,7 +2,7 @@ from gpiozero import Button
 
 
 #Class that represents a general HID device state
-class HumanInterfaceDevice:
+class HumanInterfaceDevice(object):
 
     def __init__(self, report_function):
         self.state = [
