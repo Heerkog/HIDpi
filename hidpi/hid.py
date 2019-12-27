@@ -5,9 +5,10 @@ import struct
 class HumanInterfaceDevice(object):
 
     def __init__(self, report_function):
-        self.state = [
-            0xA1]  #this is an input report
         self.report_function = report_function
+
+        self.state = bytearray()
+        self.state.append(struct.pack("B", 0xA1))  # this is an input report
 
     def get_state(self):
         return self.state
@@ -31,11 +32,9 @@ class Joystick(HumanInterfaceDevice):
         super(Joystick, self).__init__(report_function)
 
         #Define the Joystick state
-        self.state = [
-            0xA1,  #this is an input report
-            0x00,  #X-axis between -127 and 127
-            0x00,  #Y-axis between -127 and 127
-            0x00]  #unsigned char representing 3 buttons, rest empty
+        self.state.append(struct.pack("b", 0x00))  # X-axis between -127 and 127
+        self.state.append(struct.pack("b", 0x00))  # Y-axis between -127 and 127
+        self.state.append(struct.pack("B", 0x00))  # unsigned char representing 3 buttons, rest of bits are constants
 
         #Set up GPIO input
         self.up_button = Button("GPIO17")     #Up signal
@@ -54,11 +53,11 @@ class Joystick(HumanInterfaceDevice):
         self.down_button.when_released = self.y_axis_event
 
     def x_axis_event(self):
-        self.state[1] = (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127
+        self.state[1] = struct.pack("b", (int(self.right_button.is_pressed) - int(self.left_button.is_pressed)) * 127)
         self.send_report()
 
     def y_axis_event(self):
-        self.state[2] = (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127
+        self.state[2] = struct.pack("b", (int(self.up_button.is_pressed) - int(self.down_button.is_pressed)) * 127)
         self.send_report()
 
     def set_button1_down(self):
