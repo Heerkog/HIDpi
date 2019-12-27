@@ -15,9 +15,8 @@ class HumanInterfaceDevice(object):
         return self.state
 
     def send_report(self):
-        # print("state: " + binascii.hexlify(self.state))
         self.report_function(self.state)
-        return True
+        # print("state: " + binascii.hexlify(self.state))
 
 
 #Class that represents the Joystick state
