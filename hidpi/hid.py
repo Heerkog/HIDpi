@@ -1,5 +1,5 @@
 from gpiozero import Button
-
+import struct
 
 #Class that represents a general HID device state
 class HumanInterfaceDevice(object):
@@ -17,7 +17,7 @@ class HumanInterfaceDevice(object):
 
         bytes = bytearray()
         for val in self.state:
-            bytes.append(val.to_bytes(1, byteorder='big', signed=True))
+            bytes.append(struct.pack("b", val))
 
         self.report_function(bytes)
 
