@@ -134,10 +134,11 @@ class BluezHIDProfile(dbus.service.Object):
         try:
             if self.interrupt_channel is not None:
                 self.interrupt_channel.send(device_state)
-                print("Sending {0}.".format(device_state))
+                # print("Sending {0}.".format(device_state))
         except:
             print("Error while attempting to send report.")
         return True
+
 
 #create a bluetooth service to emulate a HID joystick
 class BTHIDService:

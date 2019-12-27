@@ -13,6 +13,8 @@ class HumanInterfaceDevice(object):
         return self.state
 
     def send_report(self):
+        print("x: {0} y: {1} b: {2}".format(self.state[1], self.state[2], self.state[3]))
+
         report = ""
         for val in self.state:
             report += chr(val)
