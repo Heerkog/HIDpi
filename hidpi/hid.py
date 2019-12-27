@@ -1,8 +1,8 @@
 from gpiozero import Button
-import binascii
+# import binascii
 import struct
 
-#Class that represents a general HID device state
+# Class that represents a general HID device state
 class HumanInterfaceDevice(object):
 
     def __init__(self, report_function):
@@ -19,18 +19,18 @@ class HumanInterfaceDevice(object):
         # print("state: " + binascii.hexlify(self.state))
 
 
-#Class that represents the Joystick state
+# Class that represents the Joystick state
 class Joystick(HumanInterfaceDevice):
 
     def __init__(self, report_function):
         super(Joystick, self).__init__(report_function)
 
-        #Define the Joystick state
+        # Define the Joystick state
         self.state.append(struct.pack("b", 0x00))  # X-axis between -127 and 127
         self.state.append(struct.pack("b", 0x00))  # Y-axis between -127 and 127
         self.state.append(struct.pack("B", 0x00))  # unsigned char representing 3 buttons, rest of bits are constants
 
-        #Set up GPIO input
+        # Set up GPIO input
         self.up_button = Button("GPIO17")     #Up signal
         self.down_button = Button("GPIO18")   #Down signal
         self.left_button = Button("GPIO22")   #Left signal
@@ -40,7 +40,7 @@ class Joystick(HumanInterfaceDevice):
         self.button_2 = Button("GPIO25")  #Button 2
         self.button_3 = Button("GPIO27")  #Button 3
 
-        #Bind state update methods to events
+        # Bind state update methods to events
         self.left_button.when_pressed = self.x_axis_event
         self.left_button.when_released = self.x_axis_event
         self.right_button.when_pressed = self.x_axis_event
