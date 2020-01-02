@@ -1,0 +1,12 @@
+[Unit]
+Description=Joystick HID service
+After=bluetooth.target
+Requires=bluetooth.target
+
+[Service]
+Type=exec
+ExecStart=/home/pi/HIDpi/boot.sh
+Restart=on-success
+
+[Install]
+WantedBy=multi-user.target
