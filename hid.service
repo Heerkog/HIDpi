@@ -5,8 +5,10 @@ Requires=bluetooth.target
 
 [Service]
 Type=exec
-ExecStart=/home/pi/HIDpi/boot.sh
+ExecStart=/bin/bash /home/pi/HIDpi/boot.sh
+WorkingDirectory=/home/pi/HIDpi/
 Restart=on-success
+User=pi
 
 [Install]
 WantedBy=multi-user.target
