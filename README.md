@@ -60,15 +60,17 @@ ExecStart=/usr/lib/bluetooth/bluetoothd --nodetach --compat --debug -p time
 
 Next, reboot and run the `boot.sh` script.
 
-To automatically start the service during boot, add the `boot.sh` script as a cronjob using the following commands:
-  * `sudo crontab -e`
-
-Add the following line at the end of the file:
-
-```
-@reboot bash /path/to/HIDpi/boot.sh
-``` 
-
+To automatically start the service during boot, add the `hid.service` file as a start up service. 
+First, edit the `hid.service` file to include the correct path to where you cloned this repository.
+Then execute the following commands:
+  * `sudo cp hid.service /etc/systemd/system/`
+  * `sudo systemctl enable hid.service`
+  * `sudo systemctl daemon-reload`
+  * `sudo systemctl start hid.service`
+  
+You may check whether the service is working with:
+  * `sudo systemctl status hid.service`
+  
 # Device discovery
 The device is discoverable for 30 seconds after the service started.
 To make it discoverable again for 30 seconds, trigger any of the assigned GPIO signals.
