@@ -28,7 +28,7 @@ To account for degrees of movement, one should extend the `hid.Joystick` class a
 
 # Bluetooth setup
 To make the Raspberry Pi discoverable as a HID device, a number of settings must be changed manually.
-These settings change the Bluetooth device name and class of the Raspberry Pi from a generic desktop device to a HID main device with a a joystick subclass.
+These settings change the Bluetooth device name and class of the Raspberry Pi from a generic desktop device to a HID main device with a joystick subclass.
 If you want to keep using your Raspberry Pi as a generic desktop device, you may skip these steps.
  
 The Raspberry pi Bluetooth stack settings can be initialized using the following commands: 
