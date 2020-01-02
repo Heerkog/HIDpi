@@ -49,7 +49,7 @@ Class = 0x000508
 
 # Execution
 To execute the HID service, we must run the bluetooth service in the compatibility and debug mode.
-To achieve this, we must edit the `` file by executing the following command:
+To achieve this, we must edit the `dbus-org.bluez.service` file by executing the following command:
 
   * `sudo nano /etc/systemd/system/dbus-org.bluez.service`
   
