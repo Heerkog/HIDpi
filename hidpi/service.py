@@ -153,6 +153,11 @@ class BluezHIDProfile(dbus.service.Object):
             print("Error while attempting to send report.")
         return True  # Return True to support adding a timeout function
 
+    # Return True if there is a connection on both the control and interrupt channels
+    # Return False otherwise
+    def is_connected(self):
+        return (self.control_channel is not None) and (self.interrupt_channel is not None)
+
 
 # Create a Bluetooth service to emulate a HID device
 class BTHIDService:
@@ -160,6 +165,8 @@ class BTHIDService:
     PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
     SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
     UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
+    PROFILE_MANAGER_INTERFACE = None
+    ADAPTER_INTERFACE = None
 
     def __init__(self, loop):
         mainloop = loop
@@ -181,32 +188,28 @@ class BTHIDService:
         system_bus = dbus.SystemBus()
 
         # Retrieve the Bluez Bluetooth Adapter interface
-        adapter_properties = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
+        self.ADAPTER_INTERFACE = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez/hci0"), "org.freedesktop.DBus.Properties")
 
         # Power the Bluetooth adapter
-        adapter_properties.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Powered', dbus.Boolean(1))
 
         # Allow the Bluetooth Adapter to pair
-        adapter_properties.Set('org.bluez.Adapter1', 'PairableTimeout', dbus.UInt32(0))
-        adapter_properties.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
-
-        # Allow the Bluetooth Adapter to be discoverable
-        adapter_properties.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(0))
-        adapter_properties.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'PairableTimeout', dbus.UInt32(0))
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
 
         # Create our Bluez HID Profile
         self.profile = BluezHIDProfile(system_bus, self.PROFILE_DBUS_PATH)
 
         # Retrieve the Bluez Bluetooth Profile Manager interface
-        profile_manager = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
+        self.PROFILE_MANAGER_INTERFACE = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
 
         # Register our Profile with the Bluez Bluetooth Profile Manager
-        profile_manager.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        self.PROFILE_MANAGER_INTERFACE.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
 
         print("Profile registered.")
 
         #create our HID device and pass a pointer to the input report function of our profile
-        self.joystick = hidpi.hid.Joystick(self.profile.send_input_report)
+        self.joystick = hidpi.hid.Joystick(self.send_input_report)
 
         print("Device added.")
 
@@ -221,3 +224,11 @@ class BTHIDService:
             sys.exit("Failed to read SDP record.")
 
         return fh.read()
+
+    def send_input_report(self, state):
+        if self.profile.is_connected():
+            self.profile.send_input_report(state)
+        else:
+            # Allow the Bluetooth Adapter to be discoverable
+            self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(30))
+            self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
