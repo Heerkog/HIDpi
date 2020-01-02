@@ -24,3 +24,11 @@ Run `setup.sh`
 
 # Bluetooth setup
 The Raspberry pi Bluetooth
+
+cd /usr/local/etc 
+sudo ln -s /etc/bluetooth bluetooth 
+nano ./bluetooth/main.conf
+
+Name = Bluetooth Joystick
+
+Class = 0x000508
