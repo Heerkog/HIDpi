@@ -197,6 +197,10 @@ class BTHIDService:
         self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'PairableTimeout', dbus.UInt32(0))
         self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
 
+        # Allow the Bluetooth Adapter to be discoverable for 30 seconds
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(30))
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
+
         # Create our Bluez HID Profile
         self.profile = BluezHIDProfile(system_bus, self.PROFILE_DBUS_PATH)
 
@@ -229,6 +233,6 @@ class BTHIDService:
         if self.profile.is_connected():
             self.profile.send_input_report(state)
         else:
-            # Allow the Bluetooth Adapter to be discoverable
+            # Allow the Bluetooth Adapter to be discoverable again for 30 seconds
             self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(30))
             self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
