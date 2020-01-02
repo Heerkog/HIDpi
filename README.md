@@ -58,8 +58,13 @@ Edit the `ExecStart=` line under the `[Service]` heading to specify:
 ExecStart=/usr/lib/bluetooth/bluetoothd --nodetach --compat --debug -p time
 ```
 
+Next, we must edit the `MY_ADDRESS` variable in the `BluezHIDProfile` class of the `hidpi/service.py` file.
+This variable must be set to the physical address of your Raspberry Pi's Bluetooth adapter.
+To find the physical address of your adapter, you may execute the `sudo bluetoothctl show` command.
+
 Next, reboot and run the `boot.sh` script.
 
+# Running as a service
 To automatically start the service during boot, add the `hid.service` file as a start up service. 
 First, edit the `hid.service` file to include the correct path to where you cloned this repository.
 Then execute the following commands:
