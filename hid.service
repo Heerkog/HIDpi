@@ -5,7 +5,7 @@ Requires=bluetooth.target
 
 [Service]
 Type=exec
-ExecStart=python -m /home/pi/HIDpi/hidpi
+ExecStart=/home/pi/HIDpi/boot.sh
 Restart=on-success
 
 [Install]

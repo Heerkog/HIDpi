@@ -1,2 +1,2 @@
 # Start the Python script
-sudo python -m hidpi
+python -m hidpi
