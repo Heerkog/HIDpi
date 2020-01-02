@@ -8,7 +8,7 @@ sleep 5
 sudo /usr/sbin/bluetoothd --nodetach --debug &>/dev/null &
 
 # Wait for the service to start
-sleep 5
+sleep 10
 
 # Start the Python script
 sudo python -m hidpi
