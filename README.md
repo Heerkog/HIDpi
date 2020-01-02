@@ -48,8 +48,17 @@ Class = 0x000508
 ```
 
 # Execution
-To execute the service, run the `boot.sh` script.
-Be aware that this restarts both the dbus and Bluetooth service and may take a while.
+To execute the HID service, we must run the bluetooth service in the compatibility and debug mode.
+To achieve this, we must edit the `` file by executing the following command:
+
+  * `sudo nano /etc/systemd/system/dbus-org.bluez.service`
+  
+Edit the `ExecStart=` line under the `[Service]` heading to specify:
+```
+ExecStart=/usr/lib/bluetooth/bluetoothd --nodetach --compat --debug -p time
+```
+
+Next, reboot and run the `boot.sh` script.
 
 To automatically start the service during boot, add the `boot.sh` script as a cronjob using the following commands:
   * `sudo crontab -e`
