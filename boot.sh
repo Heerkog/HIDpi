@@ -1,4 +1,6 @@
 # Manually stop and start the Bluetooth service
+sudo service dbus restart &>/dev/null &
+sleep 1
 sudo /etc/init.d/bluetooth stop &>/dev/null &
 sleep 1
 sudo service bluetooth stop &>/dev/null &
