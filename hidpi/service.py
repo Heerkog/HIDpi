@@ -11,7 +11,81 @@ from gi.repository import GObject as gobject
 
 import hidpi.hid
 
+import xml.etree.ElementTree as ET
+
 global mainloop
+
+#Define a Bluez exception for our Bluez Agent
+class Rejected(dbus.DBusException):
+    _dbus_error_name = "org.bluez.Error.Rejected"
+
+#Define a Bluez Agent
+class FixedPinAgent(dbus.service.Object):
+    SYSTEM_BUS = None
+    PIN = None
+
+    def __init__(self, bus, path, pin):
+        dbus.service.Object.__init__(bus, path)
+        self.SYSTEM_BUS = bus
+        self.PIN = pin
+
+    def set_trusted(self, path):
+        props = dbus.Interface(self.SYSTEM_BUS.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+        props.Set("org.bluez.Device1", "Trusted", True)
+
+    # Bluez release call
+    # Let Profile exit gracefully instead
+    @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
+    def Release(self):
+        print("Release")
+
+    # Bluez Authorization call
+    # Authomatically authorizes all services
+    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
+    def AuthorizeService(self, device, uuid):
+        return
+
+    # Bluez Request pin call
+    # Returns the fixed pin
+    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="s")
+    def RequestPinCode(self, device):
+        self.set_trusted(device)
+        return self.PIN
+
+    # Bluez Request passkey call
+    # Returns the fixed pin
+    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="u")
+    def RequestPasskey(self, device):
+        self.set_trusted(device)
+        return dbus.UInt32(self.PIN)
+
+    @dbus.service.method("org.bluez.Agent1", in_signature="ouq", out_signature="")
+    def DisplayPasskey(self, device, passkey, entered):
+        print("DisplayPasskey (%s, %06u entered %u)" % (device, passkey, entered))
+
+    @dbus.service.method("org.bluez.Agent1", in_signature="os", out_signature="")
+    def DisplayPinCode(self, device, pincode):
+        print("DisplayPinCode (%s, %s)" % (device, pincode))
+
+    # Bluez Confirmation call
+    # Checks our pin
+    @dbus.service.method("org.bluez.Agent1", in_signature="ou", out_signature="")
+    def RequestConfirmation(self, device, passkey):
+        if (passkey == self.PIN):
+            self.set_trusted(device)
+            return
+        raise Rejected("Passkey doesn't match")
+
+    # Bluez Authorization call
+    # Authomatically authorizes all devices
+    @dbus.service.method("org.bluez.Agent1", in_signature="o", out_signature="")
+    def RequestAuthorization(self, device):
+        return
+
+    @dbus.service.method("org.bluez.Agent1", in_signature="", out_signature="")
+    def Cancel(self):
+        print("Cancel")
+
 
 # Define a generic Bluez Profile object for our HID device
 class BluezHIDProfile(dbus.service.Object):
@@ -26,9 +100,11 @@ class BluezHIDProfile(dbus.service.Object):
     interrupt_channel = None
 
 
-    def __init__(self, bus, path):
+    def __init__(self, bus, path, physical_address):
         # Register this Bluez Profile on the DBUS
         dbus.service.Object.__init__(self, bus, path)
+
+        self.MY_ADDRESS = physical_address
 
         # Manually set up sockets
         # Bluez doesn't handle this automatically for HID profiles
@@ -161,23 +237,33 @@ class BluezHIDProfile(dbus.service.Object):
 
 # Create a Bluetooth service to emulate a HID device
 class BTHIDService:
-    MY_DEV_NAME = "RPi_HID_Joystick"
-    PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the bluez profile
-    SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record_joystick.xml"  #file path of the sdp record to laod
-    UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
+    PROFILE_DBUS_PATH = "/nl/rug/ds/heerkog/hid"  #dbus path of the Bluez Profile
+    AGENT_DBUS_PATH = "/nl/rug/ds/heerkog/fixedpinagent"  #dbus path of the Bluez Agent
     PROFILE_MANAGER_INTERFACE = None
+    AGENT_MANGER_INTERFACE = None
     ADAPTER_INTERFACE = None
 
     def __init__(self, loop):
         mainloop = loop
-        print("Configuring Bluez Profile.")
+
+        print("Loading settings.")
+
+        tree = ET.parse("settings.xml")
+        root = tree.getroot()
+        physical_address = root.find("address").text
+        pin = root.find("pin").text
+
+        print("Configuring adapter.")
+
+        #create our HID device and pass a pointer to the input report function of our profile
+        self.device = hidpi.hid.Joystick(self.send_input_report)
 
         #setup profile options
-        service_record = self.read_sdp_service_record()
+        service_record = self.read_sdp_service_record(self.device.get_sdp_record_path())
 
         opts = {
             "ServiceRecord": service_record,
-            "Name": self.MY_DEV_NAME,
+            "Name": self.device.get_name(),
             "Role": "server",
             "AutoConnect": True,
             "RequireAuthentication": False,
@@ -198,32 +284,41 @@ class BTHIDService:
         self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Pairable', dbus.Boolean(1))
 
         # Allow the Bluetooth Adapter to be discoverable for 30 seconds
-        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(30))
+        self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(180))
         self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))
 
+        print("Configuring Bluez Agent.")
+
+        # Retrieve the Bluez Bluetooth Agent Manager interface
+        self.AGENT_MANGER_INTERFACE = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.AgentManager1")
+
+        # Create our Bluez Agent
+        self.agent = FixedPinAgent(system_bus, self.AGENT_DBUS_PATH, pin)
+
+        # Register and request Agent
+        self.AGENT_MANGER_INTERFACE.RegisterAgent(self.AGENT_DBUS_PATH, "NoInputNoOutput")
+        self.AGENT_MANGER_INTERFACE.RequestDefaultAgent(self.AGENT_DBUS_PATH)
+
+        print("Agent registered.")
+        print("Configuring Bluez Profile.")
+
         # Create our Bluez HID Profile
-        self.profile = BluezHIDProfile(system_bus, self.PROFILE_DBUS_PATH)
+        self.profile = BluezHIDProfile(system_bus, self.PROFILE_DBUS_PATH, physical_address)
 
         # Retrieve the Bluez Bluetooth Profile Manager interface
         self.PROFILE_MANAGER_INTERFACE = dbus.Interface(system_bus.get_object("org.bluez", "/org/bluez"), "org.bluez.ProfileManager1")
 
         # Register our Profile with the Bluez Bluetooth Profile Manager
-        self.PROFILE_MANAGER_INTERFACE.RegisterProfile(self.PROFILE_DBUS_PATH, self.UUID, opts)
+        self.PROFILE_MANAGER_INTERFACE.RegisterProfile(self.PROFILE_DBUS_PATH, self.device.get_uuid(), opts)
 
         print("Profile registered.")
 
-        #create our HID device and pass a pointer to the input report function of our profile
-        self.joystick = hidpi.hid.Joystick(self.send_input_report)
-
-        print("Device added.")
-
-
     # Read and return an SDP record from a file
-    def read_sdp_service_record(self):
-        print("Reading service record: " + self.SDP_RECORD_PATH)
+    def read_sdp_service_record(self, path):
+        print("Reading service record: " + path)
 
         try:
-            fh = open(self.SDP_RECORD_PATH, "r")
+            fh = open(path, "r")
         except:
             sys.exit("Failed to read SDP record.")
 
@@ -234,5 +329,5 @@ class BTHIDService:
             self.profile.send_input_report(state)
         else:
             # Allow the Bluetooth Adapter to be discoverable again for 30 seconds
-            self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(30))
+            self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'DiscoverableTimeout', dbus.UInt32(180))
             self.ADAPTER_INTERFACE.Set('org.bluez.Adapter1', 'Discoverable', dbus.Boolean(1))

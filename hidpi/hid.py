@@ -1,9 +1,13 @@
 from gpiozero import Button
 # import binascii
+import sys
 import struct
 
 # Class that represents a general HID device state
 class HumanInterfaceDevice(object):
+    MY_DEV_NAME = "Generic HID"
+    SDP_RECORD_PATH = sys.path[0] + "sdp/"  #file path of the sdp record to laod
+    UUID = "00001124-0000-1000-8000-00805f9b34fb"  #HumanInterfaceDeviceServiceClass UUID
 
     def __init__(self, report_function):
         self.report_function = report_function
@@ -18,12 +22,24 @@ class HumanInterfaceDevice(object):
         self.report_function(self.state)
         # print("state: " + binascii.hexlify(self.state))
 
+    def get_name(self):
+        return self.MY_DEV_NAME
+
+    def get_sdp_record_path(self):
+        return self.SDP_RECORD_PATH
+
+    def get_uuid(self):
+        return self.UUID
+
 
 # Class that represents the Joystick state
 class Joystick(HumanInterfaceDevice):
 
     def __init__(self, report_function):
         super(Joystick, self).__init__(report_function)
+
+        self.MY_DEV_NAME = "Bluetooth Joystick"
+        self.SDP_RECORD_PATH = sys.path[0] + "sdp/sdp_record_joystick.xml"
 
         # Define the Joystick state
         self.state.append(struct.pack("b", 0x00))  # X-axis between -127 and 127

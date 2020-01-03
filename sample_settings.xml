@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<settings>
+    <address>
+        ff:ff:ff:ff:ff:ff
+    </address>
+    <pin>
+        1234
+    </pin>
+</settings>
