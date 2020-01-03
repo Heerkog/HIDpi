@@ -253,6 +253,7 @@ class BTHIDService:
         physical_address = root.find("address").text
         pin = root.find("pin").text
 
+        print("{0}".format(physical_address))
         print("Configuring adapter.")
 
         #create our HID device and pass a pointer to the input report function of our profile
