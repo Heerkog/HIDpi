@@ -250,8 +250,8 @@ class BTHIDService:
 
         tree = ET.parse("settings.xml")
         root = tree.getroot()
-        physical_address = root.find("address").text
-        pin = root.find("pin").text
+        physical_address = root.find("address").text.strip()
+        pin = root.find("pin").text.strip()
 
         print("{0}".format(physical_address))
         print("Configuring adapter.")
