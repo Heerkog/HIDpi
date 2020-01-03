@@ -89,7 +89,7 @@ class FixedPinAgent(dbus.service.Object):
 
 # Define a generic Bluez Profile object for our HID device
 class BluezHIDProfile(dbus.service.Object):
-    MY_ADDRESS = "b8:27:eb:77:31:44"  # Physical address of the Bluetooth adapter
+    MY_ADDRESS = None  # Physical address of the Bluetooth adapter
     CONTROL_PORT = 17  # HID control port as specified in SDP > Protocol Descriptor List > L2CAP > HID Control Port
     INTERRUPT_PORT = 19  # HID interrupt port as specified in SDP > Additional Protocol Descriptor List > L2CAP > HID Interrupt Port
 
