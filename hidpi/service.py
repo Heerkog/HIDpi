@@ -25,7 +25,7 @@ class FixedPinAgent(dbus.service.Object):
     PIN = None
 
     def __init__(self, bus, path, pin):
-        dbus.service.Object.__init__(bus, path)
+        dbus.service.Object.__init__(self, bus, path)
         self.SYSTEM_BUS = bus
         self.PIN = pin
 
