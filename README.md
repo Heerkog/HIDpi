@@ -58,11 +58,20 @@ Edit the `ExecStart=` line under the `[Service]` heading to specify:
 ExecStart=/usr/lib/bluetooth/bluetoothd --nodetach --compat --debug -p time
 ```
 
-Next, we must edit the `MY_ADDRESS` variable in the `BluezHIDProfile` class of the `hidpi/service.py` file.
-This variable must be set to the physical address of your Raspberry Pi's Bluetooth adapter.
-To find the physical address of your adapter, you may execute the `sudo bluetoothctl show` command.
+Next, we must create a settings file with the Bluetooth adapter's physical address and a fixed pin.
+We use a fixed pin because we don't want to have to log in to the Raspberry Pi every time we want to pair with another device.
 
-Next, reboot and run the `boot.sh` script.
+To create a settings file copy the `sample_settings.xml` file using the following command:
+  * `cp sample_settings.xml settings.xml`
+  
+Then edit the `settings.xml` file:
+  * `Nano settings.xml`
+
+Change the `address` value in the file to the physical address of your Raspberry Pi's Bluetooth adapter.
+To find the physical address of your adapter, you may execute the `sudo bluetoothctl show` command.
+Next, change the `pin` value to one of your own choosing.
+
+Finally, reboot and run the `boot.sh` script.
 
 # Running as a service
 To automatically start the service during boot, add the `hid.service` file as a start up service. 
