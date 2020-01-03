@@ -253,7 +253,6 @@ class BTHIDService:
         physical_address = root.find("address").text.strip()
         pin = root.find("pin").text.strip()
 
-        print("{0}".format(physical_address))
         print("Configuring adapter.")
 
         #create our HID device and pass a pointer to the input report function of our profile
@@ -316,8 +315,6 @@ class BTHIDService:
 
     # Read and return an SDP record from a file
     def read_sdp_service_record(self, path):
-        print("Reading service record: " + path)
-
         try:
             fh = open(path, "r")
         except:
