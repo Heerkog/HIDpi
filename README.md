@@ -88,3 +88,47 @@ You may check whether the service is working with:
 # Device discovery
 The device is discoverable for 30 seconds after the service started.
 To make it discoverable again for 30 seconds, trigger any of the assigned GPIO signals.
+
+# Repository overview
+The repository is structured as follows:
+
+* `hidpi` - main Python module.
+  * `__init__.py` - module initialization. 
+  * `__main__.py` - module main.
+  * `hid.py` - Python scripts related to the human interface device classes.
+  * `service.py` - Python scripts related to the Bluez Bluetooth service.
+* `sdp` - directory containing files related to the Bluetooth Service Discovery Protocol (SDP).
+  * `input_report_descriptor` - directory containing generated USB report descriptor files. Files are unused, as the report is included in the SDP file. Added for completeness.
+    * `Joystick3Buttons.h` - header file version of the USB report descriptor.
+    * `Joystick3Buttons.hid` - binary version of the USB report descriptor.
+    * `Joystick3Buttons.txt` - text file version of the USB report descriptor.
+  * `sdp_record_joystick.xml` - the sdp file used by the script.
+  * `sdp_record_joystick_annotated.xml` - annotated version of the sdp file used.
+* `.gitignore` - repository ignore file.
+* `LICENSE.txt` - MIT License that covers this repository.
+* `README.md` - read me file containing this text.
+* `boot.sh` - shell script that starts the Python module.
+* `hid.service` - service file that allows the to start service during boot.
+* `sample_settings.xml` - example of a settings file used by the python service script.
+* `setup.sh` - shell script that installs required packages.
+
+# Resources
+The following resources were of interest during development:
+
+* Bluetooth HID
+  * [Bluetooth HID specification](https://www.bluetooth.org/docman/handlers/DownloadDoc.ashx?doc_id=246761)
+  * [Bluetooth assigned numbers list](https://www.bluetooth.com/specifications/assigned-numbers/)
+  * [Bluetooth device class list](http://domoticx.com/bluetooth-class-of-device-lijst-cod/)
+* USB HID
+  * [USB HID specification](https://www.usb.org/document-library/device-class-definition-hid-111)
+  * [USB report descriptor tool](https://www.usb.org/document-library/hid-descriptor-tool)
+  * [USB HID report descriptor tutorial](https://eleccelerator.com/tutorial-about-usb-hid-report-descriptors/)
+* [Bluez Bluetooth stack](https://git.kernel.org/pub/scm/bluetooth/bluez.git)
+  * [Adapter API](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/adapter-api.txt)
+  * [Agent API](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/agent-api.txt)
+  * [Profile API](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/doc/profile-api.txt)
+  * [Simple Agent example](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/test/simple-agent)
+  * [HFC example](https://git.kernel.org/pub/scm/bluetooth/bluez.git/tree/test/test-hfp)
+* Repositories - note that these use depricated Bluez tools and packages
+  * [mLabviet/BL_keyboard_RPI](https://github.com/mlabviet/BL_keyboard_RPI)
+  * [AnesBenmerzoug/Bluetooth_HID](https://github.com/AnesBenmerzoug/Bluetooth_HID)
