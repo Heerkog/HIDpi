@@ -44,7 +44,7 @@ class Joystick(HumanInterfaceDevice):
         # Define the Joystick state
         self.state.append(struct.pack("b", 0x00))  # X-axis between -127 and 127
         self.state.append(struct.pack("b", 0x00))  # Y-axis between -127 and 127
-        self.state.append(struct.pack("B", 0x00))  # unsigned char representing 3 buttons, rest of bits are constants
+        self.state.append(struct.pack("B", 0x07))  # unsigned char representing 3 buttons, rest of bits are constants
 
         # Set up GPIO input
         self.up_button = Button("GPIO18")     #Up signal
