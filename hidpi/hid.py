@@ -47,10 +47,10 @@ class Joystick(HumanInterfaceDevice):
         self.state.append(struct.pack("B", 0x00))  # unsigned char representing 3 buttons, rest of bits are constants
 
         # Set up GPIO input
-        self.up_button = Button("GPIO17")     #Up signal
-        self.down_button = Button("GPIO18")   #Down signal
-        self.left_button = Button("GPIO22")   #Left signal
-        self.right_button = Button("GPIO23")  #Right signal
+        self.up_button = Button("GPIO18")     #Up signal
+        self.down_button = Button("GPIO17")   #Down signal
+        self.left_button = Button("GPIO23")   #Left signal
+        self.right_button = Button("GPIO22")  #Right signal
 
         self.button_1 = Button("GPIO24")  #Button 1
         self.button_2 = Button("GPIO25")  #Button 2
@@ -83,5 +83,5 @@ class Joystick(HumanInterfaceDevice):
         self.send_report()
 
     def button_event(self):
-        self.state[2] = struct.pack("B", 128 * int(self.button_1.is_pressed) + 64 * int(self.button_2.is_pressed) + 32 * int(self.button_3.is_pressed))
+        self.state[3] = struct.pack("B", 128 * int(self.button_1.is_pressed) + 64 * int(self.button_2.is_pressed) + 32 * int(self.button_3.is_pressed))
         self.send_report()
