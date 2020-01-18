@@ -7,10 +7,10 @@ It takes as input GPIO signals as button presses on the Raspberry Pi's **GPIO17*
 These signals are then send to the HID host that is connected to the HID device using Bluetooth.
 
 The different GPIO pins represent the following actions:
-  * North/Up: **GPIO17**
-  * South/Down: **GPIO18**
-  * West/Left: **GPIO22**
-  * East/Right: **GPIO23**
+  * North/Up: **GPIO18**
+  * South/Down: **GPIO17**
+  * West/Left: **GPIO23**
+  * East/Right: **GPIO22**
   * Button 1: **GPIO24**
   * Button 2: **GPIO25**
   * Button 3: **GPIO27**
