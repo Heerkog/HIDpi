@@ -83,5 +83,5 @@ class Joystick(HumanInterfaceDevice):
         self.send_report()
 
     def button_event(self):
-        self.state[3] = struct.pack("B", 4 * int(self.button_1.is_pressed) + 2 * int(self.button_2.is_pressed) + int(self.button_3.is_pressed))
+        self.state[3] = struct.pack("B", 4 * int(not self.button_3.is_pressed) + 2 * int(not self.button_2.is_pressed) + int(not self.button_1.is_pressed))
         self.send_report()
