@@ -152,11 +152,11 @@ The Raspberry Pi Zero is powered using its micro-USB connector.
 
 The final prototype looks like this:
 
-![Overview](https://github.com/Heerkog/HIDpi/blob/master/figures/overview.jpg =500x)
+![Overview](https://github.com/Heerkog/HIDpi/blob/master/figures/overview.jpg)
 
-![Details](https://github.com/Heerkog/HIDpi/blob/master/figures/inside.jpg =500x)
+![Details](https://github.com/Heerkog/HIDpi/blob/master/figures/inside.jpg)
 
-![Case](https://github.com/Heerkog/HIDpi/blob/master/figures/case.jpg =500x)
+![Case](https://github.com/Heerkog/HIDpi/blob/master/figures/case.jpg)
   
 
 # Repository overview
