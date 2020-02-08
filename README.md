@@ -89,29 +89,6 @@ You may check whether the service is working with:
 The device is discoverable for 30 seconds after the service started.
 To make it discoverable again for 30 seconds, trigger any of the assigned GPIO signals.
 
-# Repository overview
-The repository is structured as follows:
-
-* `hidpi` - main Python module.
-  * `__init__.py` - module initialization. 
-  * `__main__.py` - module main.
-  * `hid.py` - Python scripts related to the human interface device classes.
-  * `service.py` - Python scripts related to the Bluez Bluetooth service.
-* `sdp` - directory containing files related to the Bluetooth Service Discovery Protocol (SDP).
-  * `input_report_descriptor` - directory containing generated USB report descriptor files. Files are unused, as the report is included in the SDP file. Added for completeness.
-    * `Joystick3Buttons.h` - header file version of the USB report descriptor.
-    * `Joystick3Buttons.hid` - binary version of the USB report descriptor.
-    * `Joystick3Buttons.txt` - text file version of the USB report descriptor.
-  * `sdp_record_joystick.xml` - the sdp file used by the script.
-  * `sdp_record_joystick_annotated.xml` - annotated version of the sdp file used.
-* `.gitignore` - repository ignore file.
-* `LICENSE.txt` - MIT License that covers this repository.
-* `README.md` - read me file containing this text.
-* `boot.sh` - shell script that starts the Python module.
-* `hid.service` - service file that allows the to start service during boot.
-* `sample_settings.xml` - example of a settings file used by the python service script.
-* `setup.sh` - shell script that installs required packages.
-
 # Resources
 The following resources were of interest during development:
 
@@ -132,3 +109,74 @@ The following resources were of interest during development:
 * Repositories - note that these use depricated Bluez tools and packages
   * [mLabviet/BL_keyboard_RPI](https://github.com/mlabviet/BL_keyboard_RPI)
   * [AnesBenmerzoug/Bluetooth_HID](https://github.com/AnesBenmerzoug/Bluetooth_HID)
+
+# Prototype for R-net use
+
+A prototype was developed for use with R-net compatible wheelchairs. The following elements were used:
+
+* A Raspberry Pi Zero.
+* An R-net input/output module.
+* A voltage convertor/isolation board 
+  (Specifically, the AL-ZARD DST-1R8P-P 24v to 3.3v optocoupler isolation board).
+* A DE-9 connector.
+* A micro-USB connector.
+
+The prototype takes as input directional signals from the R-net input/output module's output connector. 
+The R-net module's output consists of a DE-9 connector with the following pin layout:
+
+| Pin | Function |
+|-----| -------- |
+| 1   | Forward  |
+| 2   | Reverse  |
+| 3   | Left     |
+| 4   | Right    |
+| 5   | Speed +  |
+| 6   | Speed -  |
+| 7   | Horn     |
+| 8   | Common   |
+| 9   | NC       |
+
+Each pin has an output rating of 0.5A 24Vdc, is normally open, and should be closed to common (i.e., pin 8).
+
+Since the Raspberry Pi Zero operates at 3.3V, the 24V directional signals are first converted and 
+isolated using a voltage convertion/isolation board by connecting pins 1 through 7 of the R-net 
+module to the positive 24V inputs of the voltage convertor/isolation board. Pin 8 of the R-net 
+module (common) is shared and connected to each negative input.
+
+The 3.3V output side of the voltage convertion/isolation board is connected to the Raspberry Pi 
+Zero's GPIO header. That is, the positive input is connected to one of the header's 3.3Vdc power 
+pins, the negative to one of the header's ground pins, and outputs 1 through 7 to the **GPIO18**, 
+**GPIO17**, **GPIO23**, **GPIO22**, **GPIO24**, **GPIO25**, and **GPIO27** pins, respectively.
+
+The Raspberry Pi Zero is powered using its micro-USB connector.
+
+The final prototype looks like this:
+
+![](https://github.com/Heerkog/HIDpi/blob/master/figures/overview.jpg =500x)
+![](https://github.com/Heerkog/HIDpi/blob/master/figures/inside.jpg =500x)
+![](https://github.com/Heerkog/HIDpi/blob/master/figures/case.jpg =500x)
+  
+
+# Repository overview
+The repository is structured as follows:
+
+* `figures` - directory containing the figures included in this read.me file.
+* `hidpi` - main Python module.
+  * `__init__.py` - module initialization. 
+  * `__main__.py` - module main.
+  * `hid.py` - Python scripts related to the human interface device classes.
+  * `service.py` - Python scripts related to the Bluez Bluetooth service.
+* `sdp` - directory containing files related to the Bluetooth Service Discovery Protocol (SDP).
+  * `input_report_descriptor` - directory containing generated USB report descriptor files. Files are unused, as the report is included in the SDP file. Added for completeness.
+    * `Joystick3Buttons.h` - header file version of the USB report descriptor.
+    * `Joystick3Buttons.hid` - binary version of the USB report descriptor.
+    * `Joystick3Buttons.txt` - text file version of the USB report descriptor.
+  * `sdp_record_joystick.xml` - the sdp file used by the script.
+  * `sdp_record_joystick_annotated.xml` - annotated version of the sdp file used.
+* `.gitignore` - repository ignore file.
+* `LICENSE.txt` - MIT License that covers this repository.
+* `README.md` - read me file containing this text.
+* `boot.sh` - shell script that starts the Python module.
+* `hid.service` - service file that allows the to start service during boot.
+* `sample_settings.xml` - example of a settings file used by the python service script.
+* `setup.sh` - shell script that installs required packages.
